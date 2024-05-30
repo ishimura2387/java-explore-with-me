@@ -6,10 +6,11 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.practicum.ewm.dto.EndpointHitDto;
 import ru.practicum.ewm.server.model.EndpointHit;
 
-@Mapper(componentModel = "spring", uses = {EndpointHitMapper.class})
+@Mapper(componentModel = "spring")
 public interface EndpointHitMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     EndpointHit toEndpointHit(EndpointHitDto endpointHitDto);
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     EndpointHitDto fromEndpointHit(EndpointHit endpointHit);
 }

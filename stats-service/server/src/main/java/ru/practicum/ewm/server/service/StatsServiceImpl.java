@@ -20,18 +20,29 @@ public class StatsServiceImpl implements StatsService {
     private final EndpointHitMapper endpointHitMapper;
     private final ViewStatsMapper viewStatsMapper;
     private final EndpointHitRepository endpointHitRepository;
-    public EndpointHitDto add (EndpointHitDto endpointHitDto) {
+
+    public EndpointHitDto add(EndpointHitDto endpointHitDto) {
         EndpointHit endpointHit = endpointHitMapper.toEndpointHit(endpointHitDto);
         return endpointHitMapper.fromEndpointHit(endpointHitRepository.save(endpointHit));
     }
-
-    public List<ViewStatsDto> get (LocalDateTime startTime, LocalDateTime endTime, List<String> uris, boolean unique) {
+@
+    public List<ViewStatsDto> get(LocalDateTime startTime, LocalDateTime endTime, List<String> uris, boolean unique) {
         if (unique) {
-            List<ViewStats> viewStats = endpointHitRepository.findUnique(startTime, endTime, uris);
-            return viewStats.stream().map(v -> viewStatsMapper.fromViewStats(v)).collect(Collectors.toList());
+            if (!uris.isEmpty()) {
+                List<ViewStats> viewStats = endpointHitRepository.findUnique(startTime, endTime, uris);
+                return viewStats.stream().map(v -> viewStatsMapper.fromViewStats(v)).collect(Collectors.toList());
+            } else {
+                List<ViewStats> viewStats = endpointHitRepository.findUniqueAllUri(startTime, endTime);
+                return viewStats.stream().map(v -> viewStatsMapper.fromViewStats(v)).collect(Collectors.toList());
+            }
         } else {
-            List<ViewStats> viewStats = endpointHitRepository.findNotUnique(startTime, endTime, uris);
-            return viewStats.stream().map(v -> viewStatsMapper.fromViewStats(v)).collect(Collectors.toList());
+            if (!uris.isEmpty()) {
+                List<ViewStats> viewStats = endpointHitRepository.findNotUnique(startTime, endTime, uris);
+                return viewStats.stream().map(v -> viewStatsMapper.fromViewStats(v)).collect(Collectors.toList());
+            } else {
+                List<ViewStats> viewStats = endpointHitRepository.findNotUniqueAllUri(startTime, endTime);
+                return viewStats.stream().map(v -> viewStatsMapper.fromViewStats(v)).collect(Collectors.toList());
+            }
         }
     }
 }
