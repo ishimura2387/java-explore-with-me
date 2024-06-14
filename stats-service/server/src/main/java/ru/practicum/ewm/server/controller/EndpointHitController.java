@@ -36,7 +36,7 @@ public class EndpointHitController {
                                   @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
                                   @RequestParam(required = false) List<String> uris,
                                   @RequestParam(defaultValue = "false") boolean unique) {
-        if (start.isBefore(end)) {
+        if (start.isAfter(end)) {
             throw new IllegalArgumentException("Ошибка периода выгрузки: Дата и время начала диапазона не может быть " +
                     "позже даты и времени окончания диапазона.");
         }

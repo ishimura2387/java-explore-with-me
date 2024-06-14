@@ -9,7 +9,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <name>Dto</name>
+    <name>dto</name>
 
     <groupId>ru.practicum</groupId>
     <artifactId>dto</artifactId>

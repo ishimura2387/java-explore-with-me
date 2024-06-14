@@ -25,10 +25,10 @@ public class StatsServiceImpl implements StatsService {
         EndpointHit endpointHit = endpointHitMapper.toEndpointHit(endpointHitDto);
         return endpointHitMapper.fromEndpointHit(endpointHitRepository.save(endpointHit));
     }
-@
+
     public List<ViewStatsDto> get(LocalDateTime startTime, LocalDateTime endTime, List<String> uris, boolean unique) {
         if (unique) {
-            if (!uris.isEmpty()) {
+            if (uris != null) {
                 List<ViewStats> viewStats = endpointHitRepository.findUnique(startTime, endTime, uris);
                 return viewStats.stream().map(v -> viewStatsMapper.fromViewStats(v)).collect(Collectors.toList());
             } else {
@@ -36,7 +36,7 @@ public class StatsServiceImpl implements StatsService {
                 return viewStats.stream().map(v -> viewStatsMapper.fromViewStats(v)).collect(Collectors.toList());
             }
         } else {
-            if (!uris.isEmpty()) {
+            if (uris != null) {
                 List<ViewStats> viewStats = endpointHitRepository.findNotUnique(startTime, endTime, uris);
                 return viewStats.stream().map(v -> viewStatsMapper.fromViewStats(v)).collect(Collectors.toList());
             } else {

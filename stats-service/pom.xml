@@ -9,7 +9,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <name>Stats service</name>
+    <name>stats-service</name>
 
     <groupId>ru.practicum</groupId>
     <artifactId>stats-service</artifactId>
@@ -21,5 +21,13 @@
         <module>server</module>
         <module>dto</module>
     </modules>
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+    </dependencies>
 
 </project>
