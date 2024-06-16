@@ -9,19 +9,19 @@ services:
     depends_on:
       - stats-db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/stats-server
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats-server
       - SPRING_DATASOURCE_USERNAME=statsadmin
       - SPRING_DATASOURCE_PASSWORD=iamstatsadmin
 
   stats-db:
-    image: postgres:14-alpine
-    container_name: stats-db-container
+    image: postgres:13.7-alpine
+    container_name: stats-db
     ports:
-        - "6541:5432"
+      - "6541:5432"
     environment:
-        - POSTGRES_DB=stats-server
-        - POSTGRES_USER=statsadmin
-        - POSTGRES_PASSWORD=iamstatsadmin
+      - POSTGRES_DB=stats-server
+      - POSTGRES_USER=statsadmin
+      - POSTGRES_PASSWORD=iamstatsadmin
 
     # ewm-service:
     #  build: main-service

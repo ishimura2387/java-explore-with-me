@@ -18,8 +18,8 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>stats-service</module>
 		<module>main-service</module>
+		<module>stats-service</module>
 	</modules>
 
 	<properties>
