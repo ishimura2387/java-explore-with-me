@@ -56,6 +56,7 @@ public class StatsClient implements BaseClient {
                 })
                 .block();
     }
+    
     public List<ViewStatsDto> getStats(LocalDateTime startLocalDateTime, LocalDateTime endLocalDateTime, List<String> uris, boolean unique) {
         String start = startLocalDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String end = endLocalDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
