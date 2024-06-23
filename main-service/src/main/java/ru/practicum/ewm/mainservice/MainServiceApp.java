@@ -14,7 +14,7 @@ import java.util.List;
 public class MainServiceApp {
     public static void main(String[] args) {
         SpringApplication.run(MainServiceApp.class, args);
-        StatsClient statsClient = new StatsClient("http://localhost:9090");
+        StatsClient statsClient = new StatsClient();
         List<String> uris = new ArrayList<>();
         uris.add("/events/1");
         //1 DTO
