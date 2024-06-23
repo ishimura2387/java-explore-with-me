@@ -17,7 +17,6 @@ public class MainServiceApp {
         StatsClient statsClient = new StatsClient();
         List<String> uris = new ArrayList<>();
         uris.add("/events/1");
-        //1 DTO
         EndpointHitDto endpointHitDto = new EndpointHitDto();
         endpointHitDto.setApp("ewm-main-service");
         endpointHitDto.setUri("/events/1");
@@ -31,14 +30,12 @@ public class MainServiceApp {
         System.out.println("app = " +  loadEndpointHitDto.get(0).getApp());
         System.out.println("uri = " +  loadEndpointHitDto.get(0).getUri());
         System.out.println("hits = " +  loadEndpointHitDto.get(0).getHits());
-        //2 DTO
         EndpointHitDto endpointHitDto2 = new EndpointHitDto();
         endpointHitDto2.setApp("ewm-main-service");
         endpointHitDto2.setUri("/events/2");
         endpointHitDto2.setIp("192.163.0.4");
         endpointHitDto2.setCreateTime(LocalDateTime.now());
         statsClient.addHit(endpointHitDto2);
-        //3 DTO
         EndpointHitDto endpointHitDto3 = new EndpointHitDto();
         endpointHitDto3.setApp("ewm-main-service");
         endpointHitDto3.setUri("/events/2");
