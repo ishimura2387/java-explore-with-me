@@ -12,21 +12,22 @@ import java.util.List;
 
 public interface EndpointHitRepository extends JpaRepository<EndpointHit, Long> {
     @Query("select new ru.practicum.ewm.dto.ViewStatsDto(s.app, s.uri, count (distinct s.ip)) from EndpointHit s " +
-            "where s.uri in :uris and s.createTime >= :start and s.createTime <= :end group by s.app, s.uri, s.id")
+            "where s.uri in :uris and s.createTime >= :start and s.createTime <= :end group by s.app, s.uri, s.id " +
+            "order by count (s.ip) desc")
     List<ViewStatsDto> findUnique(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, @Param("uris")
     List<String> uris);
 
     @Query("select new ru.practicum.ewm.dto.ViewStatsDto(s.app, s.uri, count (distinct s.ip)) from EndpointHit s " +
-            "where s.createTime >= :start and s.createTime <= :end group by s.app, s.uri, s.id")
+            "where s.createTime >= :start and s.createTime <= :end group by s.app, s.uri, s.id order by count (s.ip) desc")
     List<ViewStatsDto> findUniqueAllUri(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     @Query("select new ru.practicum.ewm.dto.ViewStatsDto(s.app, s.uri, count (s.ip)) from " +
             "EndpointHit s where s.uri in :uris and s.createTime >= :start and s.createTime <= :end group by s.app, " +
-            "s.uri")
+            "s.uri order by count (s.ip) desc")
     List<ViewStatsDto> findNotUnique(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, @Param("uris")
     List<String> uris);
 
     @Query("select new ru.practicum.ewm.dto.ViewStatsDto(s.app, s.uri, count (s.ip)) from EndpointHit s where " +
-            "s.createTime >= :start and s.createTime <= :end group by s.app, s.uri, s.id")
+            "s.createTime >= :start and s.createTime <= :end group by s.app, s.uri, s.id order by count (s.ip) desc")
     List<ViewStatsDto> findNotUniqueAllUri(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }
