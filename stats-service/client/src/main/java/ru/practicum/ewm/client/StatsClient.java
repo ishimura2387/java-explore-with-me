@@ -1,13 +1,7 @@
 package ru.practicum.ewm.client;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScans;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -18,7 +12,6 @@ import ru.practicum.ewm.dto.EndpointHitDto;
 import ru.practicum.ewm.dto.ViewStatsDto;
 import org.springframework.beans.factory.annotation.Value;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -29,10 +22,11 @@ import java.util.List;
 public class StatsClient implements BaseClient {
     private final WebClient webClient;
 
-    public @Value("{stats.url=http://localhost:9090}") String url;
+    public String url;
 
-    public StatsClient() {
-        System.out.println(url);
+    public StatsClient(@Value("${stats.url:http://localhost:9090}") String url) {
+        this.url = url;
+        log.info("stats client url: {}", url);
         webClient = WebClient.create(url);
     }
 

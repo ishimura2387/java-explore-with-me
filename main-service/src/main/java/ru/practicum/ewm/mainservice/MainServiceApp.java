@@ -1,7 +1,9 @@
 package ru.practicum.ewm.mainservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import ru.practicum.ewm.client.StatsClient;
 import ru.practicum.ewm.dto.EndpointHitDto;
@@ -12,10 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootApplication
+@ComponentScan(basePackages = "ru.practicum.ewm.client")
 public class MainServiceApp {
+
+    public static StatsClient statsClient;
+
     public static void main(String[] args) {
         SpringApplication.run(MainServiceApp.class, args);
-        StatsClient statsClient = new StatsClient();
         List<String> uris = new ArrayList<>();
         uris.add("/events/1");
         //1 DTO
