@@ -1,6 +1,13 @@
 package ru.practicum.ewm.client;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScans;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -9,31 +16,23 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.practicum.ewm.dto.EndpointHitDto;
 import ru.practicum.ewm.dto.ViewStatsDto;
+import org.springframework.beans.factory.annotation.Value;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Properties;
 
 @Component
+@ComponentScan
 @Slf4j
 public class StatsClient implements BaseClient {
     private final WebClient webClient;
-    Properties property = new Properties();
-    FileInputStream fis;
-    String url;
+
+    public @Value("{stats.url=http://localhost:9090}") String url;
 
     public StatsClient() {
-        try {
-            fis = new FileInputStream("stats-service/client/src/main/resources/config.properties");
-            property.load(fis);
-            url = property.getProperty("statsServer.url");
-            System.out.println(url);
-        } catch (IOException e) {
-            System.err.println("ОШИБКА: Файл свойств отсуствует!");
-        }
+        System.out.println(url);
         webClient = WebClient.create(url);
     }
 
