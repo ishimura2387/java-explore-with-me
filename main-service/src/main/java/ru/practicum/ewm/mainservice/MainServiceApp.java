@@ -1,5 +1,6 @@
 package ru.practicum.ewm.mainservice;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,7 +18,7 @@ import java.util.List;
 @ComponentScan(basePackages = "ru.practicum.ewm.client")
 public class MainServiceApp {
 
-    public static StatsClient statsClient;
+    public static StatsClient statsClient = new StatsClient("http://localhost:9090");
 
     public static void main(String[] args) {
         SpringApplication.run(MainServiceApp.class, args);
