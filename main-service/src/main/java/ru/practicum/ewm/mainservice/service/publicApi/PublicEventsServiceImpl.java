@@ -27,8 +27,19 @@ public class PublicEventsServiceImpl implements PublicEventsService {
             rangeStart = LocalDateTime.now();
         }
         List<EventFullDto> events = new ArrayList<>();
-        events = eventRepository.getEventsWithFilters(text, categoryIds, paid, rangeStart, rangeEnd,
-                EventState.PUBLISHED, pageable).stream().map(event -> eventMapper.toFullDto(event)).collect(Collectors.toList());
+        if (rangeStart == null) {
+            rangeStart = LocalDateTime.now();
+        }
+        if (rangeEnd == null) {
+            rangeEnd = LocalDateTime.MAX;
+        }
+       if (onlyAvailable) {
+            events = eventRepository.getEventsAvailable(text, categoryIds, paid, rangeStart, rangeEnd,
+                    EventState.PUBLISHED, pageable).stream().map(event -> eventMapper.toFullDto(event)).collect(Collectors.toList());
+        } else {
+            events = eventRepository.getEventsNotAvailable(text, categoryIds, paid, rangeStart, rangeEnd,
+                    EventState.PUBLISHED, pageable).stream().map(event -> eventMapper.toFullDto(event)).collect(Collectors.toList());
+        }
         return events;
     }
 
