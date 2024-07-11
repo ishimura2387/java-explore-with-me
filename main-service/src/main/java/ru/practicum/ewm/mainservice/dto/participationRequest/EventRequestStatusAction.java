@@ -1,8 +1,6 @@
 package ru.practicum.ewm.mainservice.dto.participationRequest;
 
-public enum ParticipationRequestState {
+public enum EventRequestStatusAction {
     CONFIRMED,
-    PENDING,
-    REJECTED,
-    CANCELED
+    REJECTED
 }

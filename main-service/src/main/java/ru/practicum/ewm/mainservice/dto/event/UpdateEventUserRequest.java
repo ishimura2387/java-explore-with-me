@@ -1,5 +1,6 @@
 package ru.practicum.ewm.mainservice.dto.event;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,8 @@ public class UpdateEventUserRequest {
     private String annotation;
     @Size(min = 20, max = 7000)
     private String description;
-    private CategoryDto category;
+    private Long category;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
     private Location location;
     private boolean paid;

@@ -10,7 +10,9 @@ import ru.practicum.ewm.mainservice.dto.event.EventState;
 import ru.practicum.ewm.mainservice.dto.event.UpdateEventAdminRequest;
 import ru.practicum.ewm.mainservice.exception.NotFoundException;
 import ru.practicum.ewm.mainservice.mapper.EventMapper;
+import ru.practicum.ewm.mainservice.model.Category;
 import ru.practicum.ewm.mainservice.model.Event;
+import ru.practicum.ewm.mainservice.repository.CategoryRepository;
 import ru.practicum.ewm.mainservice.repository.EventRepository;
 
 import java.time.LocalDateTime;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 public class AdminEventServiceImpl implements AdminEventService {
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
+    private final CategoryRepository categoryRepository;
 
     public List<EventFullDto> getEvents(List<Long> users, List<EventState> states, List<Long> categories,
                                         LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable) {
@@ -40,7 +43,7 @@ public class AdminEventServiceImpl implements AdminEventService {
             throw new DataIntegrityViolationException("Дата начала изменяемого события должна быть не ранее чем за час " +
                     "от даты публикации!");
         }
-        EventState eventState = EventState.PENDING;
+        EventState eventState = null;
             if (updateEventAdminRequest.getStateAction().equals(AdminEventAction.PUBLISH_EVENT)) {
                 eventState = EventState.PUBLISHED;
             }
@@ -54,10 +57,21 @@ public class AdminEventServiceImpl implements AdminEventService {
             if (updateEventAdminRequest.getStateAction().equals(AdminEventAction.REJECT_EVENT) && !event.getState().equals(EventState.PENDING)) {
                 throw new DataIntegrityViolationException("Событие можно отклонить, только если оно еще не опубликовано!");
             }
-        Event eventNew = eventMapper.eventAdminUpdate(updateEventAdminRequest, event, eventState);
-        if (eventState.equals(EventState.PUBLISHED)) {
-            eventNew.setPublishedOn(LocalDateTime.now());
+        Category category = null;
+         if (updateEventAdminRequest.getCategory() != null) {
+            category = categoryRepository.findById(updateEventAdminRequest.getCategory())
+                    .orElseThrow(() -> new NotFoundException("Ошибка проверки категории на наличие в Storage! " +
+                            "Категория не найдена!"));
         }
-        return eventMapper.toFullDto(eventRepository.save(eventNew));
+        if (eventState.equals(EventState.CANCELED)) {
+            event.setState(eventState);
+            return eventMapper.toFullDto(eventRepository.save(event));
+        } else {
+            Event eventNew = eventMapper.eventAdminUpdate(updateEventAdminRequest, event, eventState, category);
+            if (eventState.equals(EventState.PUBLISHED)) {
+                eventNew.setPublishedOn(LocalDateTime.now());
+            }
+            return eventMapper.toFullDto(eventRepository.save(eventNew));
+        }
     }
 }

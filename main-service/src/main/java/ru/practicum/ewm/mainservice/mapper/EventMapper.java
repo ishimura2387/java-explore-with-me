@@ -23,9 +23,11 @@ public interface EventMapper {
     EventShortDto toShortDto(Event event);
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "event.state", source = "eventState")
-    Event eventAdminUpdate(UpdateEventAdminRequest updateEventAdminRequest, @MappingTarget Event event, EventState eventState);
+    @Mapping(target = "category", source = "cat")
+    Event eventAdminUpdate(UpdateEventAdminRequest updateEventAdminRequest, @MappingTarget Event event, EventState eventState, Category cat);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "event.state", source = "eventState")
-    Event eventUserUpdate(UpdateEventUserRequest updateEventUserRequest, @MappingTarget Event event, EventState eventState);
+    @Mapping(target = "category", source = "cat")
+    Event eventUserUpdate(UpdateEventUserRequest updateEventUserRequest, @MappingTarget Event event, EventState eventState, Category cat);
 }

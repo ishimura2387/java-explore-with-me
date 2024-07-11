@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class PrivateRequestsServiceImpl implements PrivateRequestsService{
+public class PrivateRequestsServiceImpl implements PrivateRequestsService {
     private final ParticipationRequestRepository participationRequestRepository;
     private final ParticipationRequestMapper participationRequestMapper;
     private final UserRepository userRepository;
@@ -61,12 +61,12 @@ public class PrivateRequestsServiceImpl implements PrivateRequestsService{
         participationRequestNew.setCreated(LocalDateTime.now());
         participationRequestNew.setEvent(event);
         participationRequestNew.setRequester(user);
-        if (!event.isRequestModeration()) {
-            participationRequestNew.setStatus(ParticipationRequestState.PENDING);
-        } else {
+        if ((!event.isRequestModeration())) {
             participationRequestNew.setStatus(ParticipationRequestState.CONFIRMED);
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             eventRepository.save(event);
+        } else {
+            participationRequestNew.setStatus(ParticipationRequestState.PENDING);
         }
         return participationRequestMapper.fromParticipationRequest(participationRequestRepository.save(participationRequestNew));
     }
@@ -78,7 +78,7 @@ public class PrivateRequestsServiceImpl implements PrivateRequestsService{
         ParticipationRequest participationRequest = participationRequestRepository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException("Ошибка проверки запроса на наличие в Storage! " +
                         "Запрос не найден!"));
-        participationRequest.setStatus(ParticipationRequestState.REJECTED);
+        participationRequest.setStatus(ParticipationRequestState.CANCELED);
         Event event = participationRequest.getEvent();
         event.setConfirmedRequests(event.getConfirmedRequests() - 1);
         eventRepository.save(event);
