@@ -24,7 +24,7 @@ public class UpdateEventAdminRequest {
     private LocalDateTime eventDate;
     private Location location;
     private boolean paid;
-    private int participantLimit;
+    private long participantLimit;
     private boolean requestModeration;
     @Size(min = 3, max = 120)
     private String title;

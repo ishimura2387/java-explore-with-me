@@ -8,6 +8,7 @@ import ru.practicum.ewm.mainservice.exception.NotFoundException;
 import ru.practicum.ewm.mainservice.mapper.CompilationMapper;
 import ru.practicum.ewm.mainservice.model.Compilation;
 import ru.practicum.ewm.mainservice.repository.CompilationRepository;
+import ru.practicum.ewm.mainservice.repository.EventRepository;
 
 import java.util.List;
 @Service
@@ -23,7 +24,8 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
     public CompilationDto get(Long id) {
         Compilation compilation = compilationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Ошибка проверки подборки на наличие в Storage! " +
-                        "Подборка не найдена!"));
+                "Подборка не найдена!"));
+        System.out.println(compilation.getEvents().size());
         return compilationMapper.fromCompilation(compilation);
     }
 }

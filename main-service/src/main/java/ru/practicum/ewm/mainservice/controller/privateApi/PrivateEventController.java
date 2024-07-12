@@ -82,7 +82,7 @@ public class PrivateEventController {
 
     @PatchMapping("/{eventId}/requests")
     public ResponseEntity<EventRequestStatusUpdateResult> updateState(@PathVariable long userId, @PathVariable long eventId,
-                                                      @RequestBody EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
+                                                      @RequestBody @Valid EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
         log.debug("Обработка запроса PATCH/users/" + userId + "/events/" + eventId + "/requests");
         EventRequestStatusUpdateResult eventRequestStatusUpdateResult = privateEventsServiceImpl
                 .updateState(userId, eventId, eventRequestStatusUpdateRequest);

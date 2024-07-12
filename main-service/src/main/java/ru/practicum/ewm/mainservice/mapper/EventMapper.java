@@ -24,10 +24,12 @@ public interface EventMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "event.state", source = "eventState")
     @Mapping(target = "category", source = "cat")
+    @Mapping(target = "id", ignore = true)
     Event eventAdminUpdate(UpdateEventAdminRequest updateEventAdminRequest, @MappingTarget Event event, EventState eventState, Category cat);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "event.state", source = "eventState")
     @Mapping(target = "category", source = "cat")
+    @Mapping(target = "id", ignore = true)
     Event eventUserUpdate(UpdateEventUserRequest updateEventUserRequest, @MappingTarget Event event, EventState eventState, Category cat);
 }

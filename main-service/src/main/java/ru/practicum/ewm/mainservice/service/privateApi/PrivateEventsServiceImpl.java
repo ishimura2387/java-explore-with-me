@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.practicum.ewm.mainservice.dto.event.AdminEventAction;
 import ru.practicum.ewm.mainservice.dto.event.EventFullDto;
 import ru.practicum.ewm.mainservice.dto.event.EventState;
 import ru.practicum.ewm.mainservice.dto.event.UserEventAction;
-import ru.practicum.ewm.mainservice.dto.participationRequest.EventRequestStatusAction;
 import ru.practicum.ewm.mainservice.dto.participationRequest.EventRequestStatusUpdateRequest;
 import ru.practicum.ewm.mainservice.dto.participationRequest.EventRequestStatusUpdateResult;
 import ru.practicum.ewm.mainservice.dto.event.NewEventDto;
@@ -140,12 +138,36 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
                 .findAllByIdIn(eventRequestStatusUpdateRequest.getRequestIds());
         List<ParticipationRequestDto> confirmedRequests = new ArrayList<>();
         List<ParticipationRequestDto> rejectedRequests = new ArrayList<>();
-        switch (eventRequestStatusUpdateRequest.getState()) {
+        long eventParticipantLimit = event.getParticipantLimit();
+        long eventConfirmedRequests = event.getConfirmedRequests();
+        switch (eventRequestStatusUpdateRequest.getStatus()) {
+            case CONFIRMED:
+                for (ParticipationRequest participationRequest : participationRequests) {
+                    if (!event.isRequestModeration() || eventParticipantLimit == 0) {
+                        participationRequest.setStatus(ParticipationRequestState.CONFIRMED);
+                        participationRequestRepository.save(participationRequest);
+                        eventConfirmedRequests++;
+                        confirmedRequests.add(participationRequestMapper.fromParticipationRequest(participationRequest));
+                    } else if (eventParticipantLimit > eventConfirmedRequests && eventParticipantLimit != 0) {
+                        participationRequest.setStatus(ParticipationRequestState.CONFIRMED);
+                        participationRequestRepository.save(participationRequest);
+                        eventConfirmedRequests++;
+                        confirmedRequests.add(participationRequestMapper.fromParticipationRequest(participationRequest));
+                    } else {
+                        participationRequest.setStatus(ParticipationRequestState.REJECTED);
+                        participationRequestRepository.save(participationRequest);
+                        rejectedRequests.add(participationRequestMapper.fromParticipationRequest(participationRequest));
+                    }
+                }
             case REJECTED:
                 for (ParticipationRequest participationRequest : participationRequests) {
-                    if
-                }
+                    participationRequest.setStatus(ParticipationRequestState.REJECTED);
+                    participationRequestRepository.save(participationRequest);
+                    rejectedRequests.add(participationRequestMapper.fromParticipationRequest(participationRequest));
+            }
         }
+        event.setConfirmedRequests(eventConfirmedRequests);
+        eventRepository.save(event);
         return new EventRequestStatusUpdateResult(confirmedRequests, rejectedRequests);
     }
 }

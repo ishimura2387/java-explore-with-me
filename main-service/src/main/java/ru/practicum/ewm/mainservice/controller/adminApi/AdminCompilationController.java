@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,16 +17,19 @@ import ru.practicum.ewm.mainservice.dto.compilation.NewCompilationDto;
 import ru.practicum.ewm.mainservice.dto.compilation.UpdateCompilationRequest;
 import ru.practicum.ewm.mainservice.service.adminApi.AdminCompilationService;
 
+import javax.validation.Valid;
+
 
 @RestController
 @RequestMapping(path = "/admin/compilations")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class AdminCompilationController {
     private final AdminCompilationService adminCompilationServiceImpl;
 
     @PostMapping
-    public ResponseEntity<CompilationDto> add(@RequestBody NewCompilationDto newCompilationDto) {
+    public ResponseEntity<CompilationDto> add(@RequestBody @Valid NewCompilationDto newCompilationDto) {
         log.debug("Обработка запроса POST/admin/compilations");
         CompilationDto compilation= adminCompilationServiceImpl.add(newCompilationDto);
         log.debug("Создана подборка: {}", compilation);

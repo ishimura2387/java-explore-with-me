@@ -61,12 +61,10 @@ public class PrivateRequestsServiceImpl implements PrivateRequestsService {
         participationRequestNew.setCreated(LocalDateTime.now());
         participationRequestNew.setEvent(event);
         participationRequestNew.setRequester(user);
+        participationRequestNew.setStatus(ParticipationRequestState.PENDING);
         if ((!event.isRequestModeration())) {
-            participationRequestNew.setStatus(ParticipationRequestState.CONFIRMED);
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             eventRepository.save(event);
-        } else {
-            participationRequestNew.setStatus(ParticipationRequestState.PENDING);
         }
         return participationRequestMapper.fromParticipationRequest(participationRequestRepository.save(participationRequestNew));
     }
