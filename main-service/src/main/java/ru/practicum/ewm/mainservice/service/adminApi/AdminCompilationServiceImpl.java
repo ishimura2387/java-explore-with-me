@@ -2,6 +2,7 @@ package ru.practicum.ewm.mainservice.service.adminApi;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import ru.practicum.ewm.mainservice.dto.compilation.CompilationDto;
 import ru.practicum.ewm.mainservice.dto.compilation.NewCompilationDto;
 import ru.practicum.ewm.mainservice.dto.compilation.UpdateCompilationRequest;

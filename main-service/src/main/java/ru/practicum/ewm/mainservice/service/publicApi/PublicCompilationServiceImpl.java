@@ -11,21 +11,23 @@ import ru.practicum.ewm.mainservice.repository.CompilationRepository;
 import ru.practicum.ewm.mainservice.repository.EventRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class PublicCompilationServiceImpl implements PublicCompilationService {
     private final CompilationRepository compilationRepository;
     private final CompilationMapper compilationMapper;
     public List<CompilationDto> getAll(Boolean pinned, Pageable pageable) {
-        List<CompilationDto> compilationDtos = compilationRepository.findALlByPinned(pinned, pageable);
-        return compilationDtos;
+        List<CompilationDto> compilations = compilationRepository.findALlByPinned(pinned, pageable).stream()
+                .map(compilation -> compilationMapper.fromCompilation(compilation)).collect(Collectors.toList());
+        return compilations;
     }
 
     public CompilationDto get(Long id) {
         Compilation compilation = compilationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Ошибка проверки подборки на наличие в Storage! " +
-                "Подборка не найдена!"));
-        System.out.println(compilation.getEvents().size());
+                        "Подборка не найдена!"));
         return compilationMapper.fromCompilation(compilation);
     }
 }

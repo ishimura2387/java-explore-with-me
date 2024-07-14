@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.client.WebStatsClient;
 import ru.practicum.ewm.dto.EndpointHitDto;
+import ru.practicum.ewm.dto.ViewStatsDto;
 import ru.practicum.ewm.mainservice.dto.event.EventFullDto;
 import ru.practicum.ewm.mainservice.service.publicApi.PublicEventsService;
 
@@ -33,6 +34,8 @@ import java.util.List;
 public class PublicEventController {
     private final PublicEventsService publicEventsServiceImpl;
     private final WebStatsClient webStatsClient;
+    private final LocalDateTime maxTimeStump = LocalDateTime.of(2038, 01, 19, 03, 14, 07);
+    private final LocalDateTime minTimeStump = LocalDateTime.of(1970, 01, 01, 00, 00, 00);
 
     @GetMapping
     public ResponseEntity<List<EventFullDto>> getAll(@RequestParam(defaultValue = "0") @Min(0) int from,
@@ -60,9 +63,16 @@ public class PublicEventController {
     @GetMapping("/{id}")
     public ResponseEntity<EventFullDto> get(@PathVariable long id, HttpServletRequest request) {
         log.debug("Обработка запроса GET/events/" + id);
-        EventFullDto event = publicEventsServiceImpl.get(id);
-        log.debug("Получено событие: {}", event);
         saveStats(request.getRemoteAddr(), "ewm-main-service", request.getRequestURI());
+        List<String> uris = new ArrayList<>();
+        uris.add(request.getRequestURI());
+        List<ViewStatsDto> views= webStatsClient.getStats(minTimeStump, maxTimeStump, uris, true);
+        long view = 0;
+        if (views.size() > 0) {
+            view = views.get(0).getHits();
+        }
+        EventFullDto event = publicEventsServiceImpl.get(id, view);
+        log.debug("Получено событие: {}", event);
         return new ResponseEntity<>(event, HttpStatus.OK);
     }
     private void saveStats(String ip, String app, String uri) {

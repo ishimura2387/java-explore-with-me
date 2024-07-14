@@ -26,10 +26,23 @@ public class AdminEventServiceImpl implements AdminEventService {
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
     private final CategoryRepository categoryRepository;
+    private final LocalDateTime maxTimeStump = LocalDateTime.of(2038, 01, 19, 03, 14, 07);
 
     public List<EventFullDto> getEvents(List<Long> users, List<EventState> states, List<Long> categories,
                                         LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable) {
         List<EventFullDto> events = new ArrayList<>();
+        if (rangeStart == null) {
+            rangeStart = LocalDateTime.now();
+        }
+        if (rangeEnd == null) {
+            rangeEnd = maxTimeStump;
+        }
+        if (rangeStart.isAfter(rangeEnd)) {
+            throw new IllegalArgumentException("Время начала диапазона не может быть позже времени конца!");
+        }
+        if (categories != null && categories.size() == 1 && categories.get(0).equals(0L)) {
+            categories = null;
+        }
         events = eventRepository.getEvents(users, states, categories, rangeStart, rangeEnd, pageable).stream()
                 .map(event -> eventMapper.toFullDto(event)).collect(Collectors.toList());
         return events;
@@ -63,15 +76,19 @@ public class AdminEventServiceImpl implements AdminEventService {
                     .orElseThrow(() -> new NotFoundException("Ошибка проверки категории на наличие в Storage! " +
                             "Категория не найдена!"));
         }
+        EventFullDto eventFullDto = new EventFullDto();
+        eventOld.setState(eventState);
         if (eventState.equals(EventState.CANCELED)) {
-            eventOld.setState(eventState);
+            eventRepository.save(eventOld);
+            eventFullDto = eventMapper.toFullDto(eventOld);
         } else {
-            Event eventNew = eventMapper.eventAdminUpdate(updateEventAdminRequest, eventOld, eventState, category);
-
-            if (eventState.equals(EventState.PUBLISHED)) {
-                eventOld.setPublishedOn(LocalDateTime.now());
-            }
+            eventOld.setPublishedOn(LocalDateTime.now());
+            Event eventNew = new Event();
+            eventNew = eventMapper.fromRequestAdmin(updateEventAdminRequest, eventOld, eventState, category);
+            //eventNew = eventMapper.eventUpdate(eventNew, eventOld);
+            eventRepository.save(eventNew);
+            eventFullDto = eventMapper.toFullDto(eventNew);
         }
-        return eventMapper.toFullDto(eventRepository.save(eventOld));
+        return eventFullDto;
     }
 }

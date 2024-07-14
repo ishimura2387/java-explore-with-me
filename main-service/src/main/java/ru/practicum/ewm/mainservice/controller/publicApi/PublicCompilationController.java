@@ -29,7 +29,7 @@ public class PublicCompilationController {
     @GetMapping
     public ResponseEntity<List<CompilationDto>> getAll(@RequestParam(defaultValue = "0") @Min(0) int from,
                                                        @RequestParam(defaultValue = "10") @Min(1) int size,
-                                                       @RequestParam Boolean pinned) {
+                                                       @RequestParam(required = false) Boolean pinned) {
         log.debug("Обработка запроса GET/compilations");
         List<CompilationDto> compilations = new ArrayList<>();
         Sort sort = Sort.by(Sort.Direction.ASC, "id");

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.ewm.mainservice.dto.event.EventFullDto;
 import ru.practicum.ewm.mainservice.dto.event.EventState;
 import ru.practicum.ewm.mainservice.dto.event.UserEventAction;
+import ru.practicum.ewm.mainservice.dto.participationRequest.EventRequestStatusAction;
 import ru.practicum.ewm.mainservice.dto.participationRequest.EventRequestStatusUpdateRequest;
 import ru.practicum.ewm.mainservice.dto.participationRequest.EventRequestStatusUpdateResult;
 import ru.practicum.ewm.mainservice.dto.event.NewEventDto;
@@ -67,13 +68,15 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
         return eventFullDto;
     }
 
-    public EventFullDto get(Long userId, Long eventId) {
+    public EventFullDto get(Long userId, Long eventId, Long hits) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Ошибка проверки пользователя на наличие в Storage! " +
                         "Пользователь не найден!"));
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Ошибка проверки события на наличие в Storage! " +
                         "Событие не найдено!"));
+        event.setViews(hits);
+        eventRepository.save(event);
         return eventMapper.toFullDto(event);
     }
 
@@ -81,12 +84,20 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Ошибка проверки пользователя на наличие в Storage! " +
                         "Пользователь не найден!"));
-        Event event = eventRepository.findById(eventId)
+        Event eventOld = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Ошибка проверки события на наличие в Storage! " +
                         "Событие не найдено!"));
-        if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+        System.out.println("eventOld paid = " + eventOld.isPaid());
+        System.out.println("eventOld limit = " + eventOld.getParticipantLimit());
+        if (eventOld.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
             throw new DataIntegrityViolationException("Дата и время на которые намечено событие не может быть раньше, чем через два " +
                     "часа от текущего момента!");
+        }
+        Category category = null;
+        if (updateEventUserRequest.getCategory() != null) {
+            category = categoryRepository.findById(updateEventUserRequest.getCategory())
+                    .orElseThrow(() -> new NotFoundException("Ошибка проверки категории на наличие в Storage! " +
+                            "Категория не найдена!"));
         }
         EventState eventState = null;
         if (updateEventUserRequest.getStateAction().equals(UserEventAction.SEND_TO_REVIEW)) {
@@ -95,19 +106,19 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
         if (updateEventUserRequest.getStateAction().equals(UserEventAction.CANCEL_REVIEW)) {
             eventState = EventState.CANCELED;
         }
-        Category category = null;
-        if (updateEventUserRequest.getCategory() != null) {
-            category = categoryRepository.findById(updateEventUserRequest.getCategory())
-                    .orElseThrow(() -> new NotFoundException("Ошибка проверки категории на наличие в Storage! " +
-                            "Категория не найдена!"));
-        }
+        EventFullDto eventFullDto = new EventFullDto();
+        eventOld.setState(eventState);
         if (eventState.equals(EventState.CANCELED)) {
-            event.setState(eventState);
-            return eventMapper.toFullDto(eventRepository.save(event));
+            eventRepository.save(eventOld);
+            eventFullDto = eventMapper.toFullDto(eventOld);
         } else {
-            Event eventNew = eventMapper.eventUserUpdate(updateEventUserRequest, event, eventState, category);
-            return eventMapper.toFullDto(eventRepository.save(eventNew));
+            Event eventNew = new Event();
+            eventNew = eventMapper.fromRequestUser(updateEventUserRequest, eventNew, eventState, category);
+            eventNew = eventMapper.eventUpdate(eventNew, eventOld);
+            eventRepository.save(eventNew);
+            eventFullDto = eventMapper.toFullDto(eventNew);
         }
+        return eventFullDto;
     }
 
     public List<ParticipationRequestDto> getRequests(Long userId, Long eventId) {
@@ -130,7 +141,9 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Ошибка проверки события на наличие в Storage! " +
                         "Событие не найдено!"));
-        if (event.getParticipantLimit() == event.getConfirmedRequests()) {
+        if (event.getParticipantLimit() == event.getConfirmedRequests()
+                && eventRequestStatusUpdateRequest.getStatus().equals(EventRequestStatusAction.CONFIRMED)
+                && event.getParticipantLimit() != 0) {
             throw new DataIntegrityViolationException("Нельзя подтвердить заявку, если уже достигнут лимит по заявкам " +
                     "на данное событие!");
         }
@@ -145,26 +158,28 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
                 for (ParticipationRequest participationRequest : participationRequests) {
                     if (!event.isRequestModeration() || eventParticipantLimit == 0) {
                         participationRequest.setStatus(ParticipationRequestState.CONFIRMED);
-                        participationRequestRepository.save(participationRequest);
-                        eventConfirmedRequests++;
-                        confirmedRequests.add(participationRequestMapper.fromParticipationRequest(participationRequest));
-                    } else if (eventParticipantLimit > eventConfirmedRequests && eventParticipantLimit != 0) {
-                        participationRequest.setStatus(ParticipationRequestState.CONFIRMED);
-                        participationRequestRepository.save(participationRequest);
-                        eventConfirmedRequests++;
                         confirmedRequests.add(participationRequestMapper.fromParticipationRequest(participationRequest));
                     } else {
-                        participationRequest.setStatus(ParticipationRequestState.REJECTED);
-                        participationRequestRepository.save(participationRequest);
-                        rejectedRequests.add(participationRequestMapper.fromParticipationRequest(participationRequest));
+                        if (eventParticipantLimit > eventConfirmedRequests && eventParticipantLimit != 0) {
+                            participationRequest.setStatus(ParticipationRequestState.CONFIRMED);
+                            participationRequestRepository.save(participationRequest);
+                            eventConfirmedRequests++;
+                            confirmedRequests.add(participationRequestMapper.fromParticipationRequest(participationRequest));
+                        } else {
+                            participationRequest.setStatus(ParticipationRequestState.REJECTED);
+                            participationRequestRepository.save(participationRequest);
+                            rejectedRequests.add(participationRequestMapper.fromParticipationRequest(participationRequest));
+                        }
                     }
                 }
+                break;
             case REJECTED:
                 for (ParticipationRequest participationRequest : participationRequests) {
                     participationRequest.setStatus(ParticipationRequestState.REJECTED);
                     participationRequestRepository.save(participationRequest);
                     rejectedRequests.add(participationRequestMapper.fromParticipationRequest(participationRequest));
             }
+                break;
         }
         event.setConfirmedRequests(eventConfirmedRequests);
         eventRepository.save(event);

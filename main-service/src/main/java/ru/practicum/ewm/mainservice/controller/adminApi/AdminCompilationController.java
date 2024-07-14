@@ -47,7 +47,6 @@ public class AdminCompilationController {
     @DeleteMapping("/{compId}")
     public ResponseEntity<Void> delete(@PathVariable long compId) {
         log.debug("Обработка запроса DELETE/admin/compilations/" + compId);
-        adminCompilationServiceImpl.delete(compId);
         log.debug("Подборка удалена: {}", compId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

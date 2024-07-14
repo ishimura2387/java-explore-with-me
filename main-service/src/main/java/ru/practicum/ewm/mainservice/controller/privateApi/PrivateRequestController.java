@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.mainservice.dto.participationRequest.ParticipationRequestDto;
 import ru.practicum.ewm.mainservice.service.privateApi.PrivateRequestsService;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +36,7 @@ public class PrivateRequestController {
         return new ResponseEntity<>(participationRequests, HttpStatus.OK);
     }
     @PostMapping
-    public ResponseEntity<ParticipationRequestDto> add(@PathVariable long userId, @RequestParam @Min(1) long eventId) {
+    public ResponseEntity<ParticipationRequestDto> add(@PathVariable long userId, @RequestParam long eventId) {
         log.debug("Обработка запроса POST/users/{userId}" + userId + "/requests/?eventId=" + eventId );
         ParticipationRequestDto participationRequest = privateRequestsServiceImpl.add(userId, eventId);
         log.debug("Создан запрос: {}", participationRequest);

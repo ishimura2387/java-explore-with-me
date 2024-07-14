@@ -62,11 +62,12 @@ public class PrivateRequestsServiceImpl implements PrivateRequestsService {
         participationRequestNew.setEvent(event);
         participationRequestNew.setRequester(user);
         participationRequestNew.setStatus(ParticipationRequestState.PENDING);
-        if ((!event.isRequestModeration())) {
+        if (!event.isRequestModeration()) {
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             eventRepository.save(event);
         }
-        return participationRequestMapper.fromParticipationRequest(participationRequestRepository.save(participationRequestNew));
+        participationRequestRepository.save(participationRequestNew);
+        return participationRequestMapper.fromParticipationRequest(participationRequestNew);
     }
 
     public ParticipationRequestDto delete(Long userId, Long requestId) {

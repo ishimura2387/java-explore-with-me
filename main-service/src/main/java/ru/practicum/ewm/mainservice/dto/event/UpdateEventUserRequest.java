@@ -8,6 +8,8 @@ import lombok.Setter;
 import ru.practicum.ewm.mainservice.dto.category.CategoryDto;
 import ru.practicum.ewm.mainservice.model.Location;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 @AllArgsConstructor
@@ -24,6 +26,7 @@ public class UpdateEventUserRequest {
     private LocalDateTime eventDate;
     private Location location;
     private boolean paid;
+    @PositiveOrZero
     private long participantLimit;
     private boolean requestModeration;
     @Size(min = 3, max = 120)

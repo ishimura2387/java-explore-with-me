@@ -14,7 +14,7 @@ public interface PrivateEventsService {
     List<EventFullDto> getAll(Long userId, Pageable pageable);
     EventFullDto add(Long userId, NewEventDto newEventDto);
 
-    EventFullDto get(Long userId, Long eventId);
+    EventFullDto get(Long userId, Long eventId, Long hits);
 
     EventFullDto update(Long userId, Long eventId, UpdateEventUserRequest updateEventUserRequest);
 

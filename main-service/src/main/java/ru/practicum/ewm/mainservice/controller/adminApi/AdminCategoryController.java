@@ -44,7 +44,7 @@ public class AdminCategoryController {
     }
 
     @PatchMapping("/{catId}")
-    public ResponseEntity<CategoryDto> update(@PathVariable long catId, @RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<CategoryDto> update(@PathVariable long catId, @Valid @RequestBody CategoryDto categoryDto) {
         categoryDto.setId(catId);
         log.debug("Обработка запроса PATCH/admin/categories/" + catId);
         CategoryDto category = adminCategoryServiceImpl.update(categoryDto);

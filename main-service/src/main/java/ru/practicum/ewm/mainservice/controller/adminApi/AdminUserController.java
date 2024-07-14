@@ -35,9 +35,9 @@ public class AdminUserController {
     private final AdminUserService adminUserServiceImpl;
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> get(@RequestParam(required = false) @Min(0) List<Long> ids,
-                                                           @RequestParam(defaultValue = "0") @Min(0) int from,
-                                                           @RequestParam(defaultValue = "10") @Min(1) int size) {
+    public ResponseEntity<List<UserDto>> get(@RequestParam(required = false) List<Long> ids,
+                                             @RequestParam(defaultValue = "0") @Min(0) int from,
+                                             @RequestParam(defaultValue = "10") @Min(1) int size) {
         log.debug("Обработка запроса GET/admin/users");
         List<UserDto> users = new ArrayList<>();
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
@@ -49,7 +49,7 @@ public class AdminUserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> add(@RequestBody @Valid NewUserRequest newUserRequest) {
+    public ResponseEntity<UserDto> add(@Valid @RequestBody NewUserRequest newUserRequest) {
         log.debug("Обработка запроса POST/admin/users");
         UserDto user = adminUserServiceImpl.add(newUserRequest);
         log.debug("Создан пользователь: {}", user);

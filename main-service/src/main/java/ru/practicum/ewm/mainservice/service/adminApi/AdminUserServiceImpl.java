@@ -10,6 +10,7 @@ import ru.practicum.ewm.mainservice.model.User;
 import ru.practicum.ewm.mainservice.dto.user.UserDto;
 import ru.practicum.ewm.mainservice.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +22,12 @@ public class AdminUserServiceImpl implements AdminUserService {
     private final UserMapper userMapper;
 
     public List<UserDto> get(List<Long> ids, Pageable pageable) {
-        List<User> users = userRepository.findALlByIdIn(ids, pageable);
+        List<User> users = new ArrayList<>();
+        if (ids != null && !ids.isEmpty()) {
+             users = userRepository.findALlByIdIn(ids, pageable);
+        } else {
+            users = userRepository.findAll(pageable).toList();
+        }
         return users.stream().map(user -> userMapper.fromUser(user)).collect(Collectors.toList());
     }
 
