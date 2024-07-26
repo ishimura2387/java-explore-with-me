@@ -39,6 +39,7 @@ public class PublicCompilationController {
         log.debug("Получен список с размером: {}", compilations.size());
         return new ResponseEntity<>(compilations, HttpStatus.OK);
     }
+
     @GetMapping("/{compId}")
     public ResponseEntity<CompilationDto> get(@PathVariable long compId) {
         log.debug("Обработка запроса GET/compilations/" + compId);

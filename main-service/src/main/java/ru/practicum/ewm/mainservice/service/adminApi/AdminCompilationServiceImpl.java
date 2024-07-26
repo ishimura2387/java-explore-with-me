@@ -2,7 +2,6 @@ package ru.practicum.ewm.mainservice.service.adminApi;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import ru.practicum.ewm.mainservice.dto.compilation.CompilationDto;
 import ru.practicum.ewm.mainservice.dto.compilation.NewCompilationDto;
 import ru.practicum.ewm.mainservice.dto.compilation.UpdateCompilationRequest;
@@ -22,6 +21,7 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
     private final CompilationRepository compilationRepository;
     private final CompilationMapper compilationMapper;
     private final EventRepository eventRepository;
+
     public CompilationDto add(NewCompilationDto newCompilationDto) {
         List<Event> events = new ArrayList<>();
         events = eventRepository.findAllByIdIn(newCompilationDto.getEvents());

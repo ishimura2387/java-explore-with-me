@@ -12,6 +12,7 @@ import ru.practicum.ewm.mainservice.model.Category;
 public interface CategoryMapper {
 
     Category toCategory(NewCategoryDto newCategoryDto);
+
     CategoryDto fromCategory(Category category);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

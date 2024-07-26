@@ -43,6 +43,7 @@ public class PrivateEventController {
     private final WebStatsClient webStatsClient;
     private final LocalDateTime maxTimeStump = LocalDateTime.of(2038, 01, 19, 03, 14, 07);
     private final LocalDateTime minTimeStump = LocalDateTime.of(1970, 01, 01, 00, 00, 00);
+
     @GetMapping
     public ResponseEntity<List<EventFullDto>> getAll(@PathVariable long userId, @RequestParam(defaultValue = "0") @Min(0) int from,
                                                      @RequestParam(defaultValue = "10") @Min(1) int size) {
@@ -55,6 +56,7 @@ public class PrivateEventController {
         log.debug("Получен список с размером: {}", events.size());
         return new ResponseEntity<>(events, HttpStatus.OK);
     }
+
     @PostMapping
     public ResponseEntity<EventFullDto> add(@PathVariable long userId, @RequestBody @Valid NewEventDto newEventDto) {
         log.debug("Обработка запроса POST/users/" + userId + "/events");
@@ -62,12 +64,13 @@ public class PrivateEventController {
         log.debug("Создано событие: {}", event);
         return new ResponseEntity<>(event, HttpStatus.CREATED);
     }
+
     @GetMapping("/{eventId}")
     public ResponseEntity<EventFullDto> get(@PathVariable long userId, @PathVariable long eventId, HttpServletRequest request) {
         log.debug("Обработка запроса GET/users/" + userId + "/events/" + eventId);
         List<String> uris = new ArrayList<>();
         uris.add(request.getRequestURI());
-        List<ViewStatsDto> views= webStatsClient.getStats(minTimeStump, maxTimeStump, uris, true);
+        List<ViewStatsDto> views = webStatsClient.getStats(minTimeStump, maxTimeStump, uris, true);
         long view = 0;
         if (views.size() > 0) {
             view = views.get(0).getHits();
@@ -85,6 +88,7 @@ public class PrivateEventController {
         log.debug("Изменено событие: {}", event);
         return new ResponseEntity<>(event, HttpStatus.OK);
     }
+
     @GetMapping("/{eventId}/requests")
     public ResponseEntity<List<ParticipationRequestDto>> getRequests(@PathVariable long userId, @PathVariable long eventId) {
         log.debug("Обработка запроса GET/users/" + userId + "/events/" + eventId + "/requests");

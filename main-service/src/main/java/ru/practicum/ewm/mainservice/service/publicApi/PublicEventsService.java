@@ -9,5 +9,6 @@ import java.util.List;
 public interface PublicEventsService {
     List<EventFullDto> getAll(String text, List<Long> categoryIds, Boolean paid, LocalDateTime rangeStart,
                               LocalDateTime rangeEnd, Pageable pageable, Boolean onlyAvailable);
+
     EventFullDto get(Long id, Long hits);
 }

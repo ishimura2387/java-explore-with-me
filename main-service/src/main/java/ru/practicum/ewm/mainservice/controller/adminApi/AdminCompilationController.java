@@ -31,7 +31,7 @@ public class AdminCompilationController {
     @PostMapping
     public ResponseEntity<CompilationDto> add(@RequestBody @Valid NewCompilationDto newCompilationDto) {
         log.debug("Обработка запроса POST/admin/compilations");
-        CompilationDto compilation= adminCompilationServiceImpl.add(newCompilationDto);
+        CompilationDto compilation = adminCompilationServiceImpl.add(newCompilationDto);
         log.debug("Создана подборка: {}", compilation);
         return new ResponseEntity<>(compilation, HttpStatus.CREATED);
     }

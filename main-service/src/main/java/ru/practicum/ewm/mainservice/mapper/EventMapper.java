@@ -19,8 +19,11 @@ public interface EventMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "category", source = "category")
     Event toEvent(NewEventDto newEventDto, Category category);
+
     EventFullDto toFullDto(Event event);
+
     EventShortDto toShortDto(Event event);
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "event.state", source = "eventState")
     @Mapping(target = "category", source = "cat")
@@ -34,5 +37,5 @@ public interface EventMapper {
     Event fromRequestUser(UpdateEventUserRequest updateEventUserRequest, @MappingTarget Event event, EventState eventState, Category cat);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Event eventUpdate(@MappingTarget Event eventNew, Event Old);
+    Event eventUpdate(@MappingTarget Event eventNew, Event old);
 }

@@ -8,7 +8,6 @@ import ru.practicum.ewm.mainservice.exception.NotFoundException;
 import ru.practicum.ewm.mainservice.mapper.CompilationMapper;
 import ru.practicum.ewm.mainservice.model.Compilation;
 import ru.practicum.ewm.mainservice.repository.CompilationRepository;
-import ru.practicum.ewm.mainservice.repository.EventRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +17,7 @@ import java.util.stream.Collectors;
 public class PublicCompilationServiceImpl implements PublicCompilationService {
     private final CompilationRepository compilationRepository;
     private final CompilationMapper compilationMapper;
+
     public List<CompilationDto> getAll(Boolean pinned, Pageable pageable) {
         List<CompilationDto> compilations = compilationRepository.findALlByPinned(pinned, pageable).stream()
                 .map(compilation -> compilationMapper.fromCompilation(compilation)).collect(Collectors.toList());

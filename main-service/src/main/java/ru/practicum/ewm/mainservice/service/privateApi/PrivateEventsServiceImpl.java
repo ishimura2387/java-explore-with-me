@@ -51,8 +51,7 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
 
     public EventFullDto add(Long userId, NewEventDto newEventDto) {
         if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new DataIntegrityViolationException("Дата и время на которые намечено событие не может быть раньше, чем через два " +
-                    "часа от текущего момента!");
+            throw new IllegalArgumentException("Не корректная дата!");
         }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Ошибка проверки пользователя на наличие в Storage! " +
@@ -64,6 +63,15 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
         event.setCreatedOn(LocalDateTime.now());
         event.setInitiator(user);
         event.setState(EventState.PENDING);
+        if (newEventDto.getPaid() == null) {
+            event.setPaid(false);
+        }
+        if (newEventDto.getRequestModeration() == null) {
+            event.setRequestModeration(true);
+        }
+        if (newEventDto.getParticipantLimit() == null) {
+            event.setParticipantLimit(0L);
+        }
         EventFullDto eventFullDto = eventMapper.toFullDto(eventRepository.save(event));
         return eventFullDto;
     }
@@ -87,11 +95,12 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
         Event eventOld = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Ошибка проверки события на наличие в Storage! " +
                         "Событие не найдено!"));
-        System.out.println("eventOld paid = " + eventOld.isPaid());
-        System.out.println("eventOld limit = " + eventOld.getParticipantLimit());
         if (eventOld.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
             throw new DataIntegrityViolationException("Дата и время на которые намечено событие не может быть раньше, чем через два " +
                     "часа от текущего момента!");
+        }
+        if (updateEventUserRequest.getEventDate() != null && updateEventUserRequest.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+            throw new IllegalArgumentException("Не корректная дата!");
         }
         Category category = null;
         if (updateEventUserRequest.getCategory() != null) {
@@ -100,25 +109,23 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
                             "Категория не найдена!"));
         }
         EventState eventState = null;
-        if (updateEventUserRequest.getStateAction().equals(UserEventAction.SEND_TO_REVIEW)) {
-            eventState = EventState.PENDING;
+        if (updateEventUserRequest.getStateAction() != null) {
+            if (updateEventUserRequest.getStateAction().equals(UserEventAction.SEND_TO_REVIEW)) {
+                eventState = EventState.PENDING;
+                eventOld.setState(EventState.PENDING);
+            }
+            if (updateEventUserRequest.getStateAction().equals(UserEventAction.CANCEL_REVIEW)) {
+                eventState = EventState.CANCELED;
+                eventOld.setState(EventState.CANCELED);
+                return eventMapper.toFullDto(eventRepository.save(eventOld));
+            }
         }
-        if (updateEventUserRequest.getStateAction().equals(UserEventAction.CANCEL_REVIEW)) {
-            eventState = EventState.CANCELED;
-        }
-        EventFullDto eventFullDto = new EventFullDto();
-        eventOld.setState(eventState);
-        if (eventState.equals(EventState.CANCELED)) {
-            eventRepository.save(eventOld);
-            eventFullDto = eventMapper.toFullDto(eventOld);
-        } else {
-            Event eventNew = new Event();
-            eventNew = eventMapper.fromRequestUser(updateEventUserRequest, eventNew, eventState, category);
-            eventNew = eventMapper.eventUpdate(eventNew, eventOld);
-            eventRepository.save(eventNew);
-            eventFullDto = eventMapper.toFullDto(eventNew);
-        }
-        return eventFullDto;
+        Event eventNew = new Event();
+        eventNew = eventMapper.fromRequestUser(updateEventUserRequest, eventNew, eventState, category);
+        EventFullDto dto = eventMapper.toFullDto(eventOld);
+        eventMapper.eventUpdate(eventOld, eventNew);
+        eventRepository.save(eventOld);
+        return dto;
     }
 
     public List<ParticipationRequestDto> getRequests(Long userId, Long eventId) {
@@ -178,7 +185,7 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
                     participationRequest.setStatus(ParticipationRequestState.REJECTED);
                     participationRequestRepository.save(participationRequest);
                     rejectedRequests.add(participationRequestMapper.fromParticipationRequest(participationRequest));
-            }
+                }
                 break;
         }
         event.setConfirmedRequests(eventConfirmedRequests);

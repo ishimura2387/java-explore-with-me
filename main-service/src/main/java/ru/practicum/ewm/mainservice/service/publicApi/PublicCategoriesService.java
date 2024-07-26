@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface PublicCategoriesService {
     List<CategoryDto> getAll(Pageable pageable);
+
     CategoryDto get(Long id);
 }

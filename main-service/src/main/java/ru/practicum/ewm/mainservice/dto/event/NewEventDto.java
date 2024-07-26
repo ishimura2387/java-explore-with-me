@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.practicum.ewm.mainservice.dto.category.CategoryDto;
 import ru.practicum.ewm.mainservice.model.Location;
 
 import javax.validation.Valid;
@@ -34,10 +33,10 @@ public class NewEventDto {
     @NotNull
     @Valid
     private Location location;
-    private boolean paid;
+    private Boolean paid;
     @PositiveOrZero
-    private long participantLimit;
-    private boolean requestModeration;
+    private Long participantLimit;
+    private Boolean requestModeration;
     @NotBlank
     @Size(min = 3, max = 120)
     private String title;

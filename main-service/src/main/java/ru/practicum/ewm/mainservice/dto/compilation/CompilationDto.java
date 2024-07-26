@@ -7,6 +7,7 @@ import lombok.Setter;
 import ru.practicum.ewm.mainservice.dto.event.EventShortDto;
 
 import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

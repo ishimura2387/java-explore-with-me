@@ -11,6 +11,7 @@ import java.util.List;
 public interface AdminEventService {
    List<EventFullDto> getEvents(List<Long> users, List<EventState> states, List<Long> categories,
                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
+
    EventFullDto update(Long id, UpdateEventAdminRequest updateEventAdminRequest);
 
 }

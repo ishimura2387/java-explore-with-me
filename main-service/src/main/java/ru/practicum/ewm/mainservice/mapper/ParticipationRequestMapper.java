@@ -16,6 +16,7 @@ public interface ParticipationRequestMapper {
     @Mapping(target = "requester", source = "requester")
     @Mapping(target = "id", ignore = true)
     ParticipationRequest toParticipationRequest(ParticipationRequestDto participationRequestDto, Event event, User requester);
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "event", source = "event.id")
     @Mapping(target = "requester", source = "requester.id")

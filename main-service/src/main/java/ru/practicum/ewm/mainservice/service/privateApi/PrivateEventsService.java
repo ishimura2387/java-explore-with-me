@@ -12,6 +12,7 @@ import java.util.List;
 
 public interface PrivateEventsService {
     List<EventFullDto> getAll(Long userId, Pageable pageable);
+
     EventFullDto add(Long userId, NewEventDto newEventDto);
 
     EventFullDto get(Long userId, Long eventId, Long hits);

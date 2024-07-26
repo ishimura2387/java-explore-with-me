@@ -44,9 +44,9 @@ public class PublicEventController {
                                                      @RequestParam(required = false) List<Long> categoryIds,
                                                      @RequestParam(required = false) Boolean paid,
                                                      @RequestParam(required = false)
-                                                     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+                                                     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                                      @RequestParam(required = false)
-                                                     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+                                                     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
                                                      @RequestParam(defaultValue = "false") Boolean onlyAvailable,
                                                      HttpServletRequest request) {
         log.debug("Обработка запроса GET/events");
@@ -66,7 +66,7 @@ public class PublicEventController {
         saveStats(request.getRemoteAddr(), "ewm-main-service", request.getRequestURI());
         List<String> uris = new ArrayList<>();
         uris.add(request.getRequestURI());
-        List<ViewStatsDto> views= webStatsClient.getStats(minTimeStump, maxTimeStump, uris, true);
+        List<ViewStatsDto> views = webStatsClient.getStats(minTimeStump, maxTimeStump, uris, true);
         long view = 0;
         if (views.size() > 0) {
             view = views.get(0).getHits();
@@ -75,6 +75,7 @@ public class PublicEventController {
         log.debug("Получено событие: {}", event);
         return new ResponseEntity<>(event, HttpStatus.OK);
     }
+
     private void saveStats(String ip, String app, String uri) {
         EndpointHitDto endpointHitDto = new EndpointHitDto();
         endpointHitDto.setApp(app);
