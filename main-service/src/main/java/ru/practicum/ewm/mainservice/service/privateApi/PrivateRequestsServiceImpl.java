@@ -48,7 +48,7 @@ public class PrivateRequestsServiceImpl implements PrivateRequestsService {
         if (!participationRequest.isEmpty()) {
             throw new DataIntegrityViolationException("Нельзя добавить повторный запрос!");
         }
-        if (event.getInitiator().getId() == userId) {
+        if (event.getInitiator().getId().longValue() == userId.longValue()) {
             throw new DataIntegrityViolationException("Инициатор события не может добавить запрос на участие в своём событии!");
         }
         if (!event.getState().equals(EventState.PUBLISHED)) {
