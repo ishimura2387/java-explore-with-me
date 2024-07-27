@@ -29,7 +29,7 @@ public class AdminCompilationController {
     private final AdminCompilationService adminCompilationServiceImpl;
 
     @PostMapping
-    public ResponseEntity<CompilationDto> add(@RequestBody @Valid NewCompilationDto newCompilationDto) {
+    public ResponseEntity<CompilationDto> add(@Valid @RequestBody NewCompilationDto newCompilationDto) {
         log.debug("Обработка запроса POST/admin/compilations");
         CompilationDto compilation = adminCompilationServiceImpl.add(newCompilationDto);
         log.debug("Создана подборка: {}", compilation);
@@ -37,7 +37,7 @@ public class AdminCompilationController {
     }
 
     @PatchMapping("/{compId}")
-    public ResponseEntity<CompilationDto> update(@PathVariable long compId, @RequestBody UpdateCompilationRequest updateCompilationRequest) {
+    public ResponseEntity<CompilationDto> update(@PathVariable long compId, @Valid @RequestBody UpdateCompilationRequest updateCompilationRequest) {
         log.debug("Обработка запроса PATCH/admin/compilations/" + compId);
         CompilationDto compilation = adminCompilationServiceImpl.update(compId, updateCompilationRequest);
         log.debug("Изменена подборка: {}, compId={}", compilation, compId);
@@ -47,6 +47,7 @@ public class AdminCompilationController {
     @DeleteMapping("/{compId}")
     public ResponseEntity<Void> delete(@PathVariable long compId) {
         log.debug("Обработка запроса DELETE/admin/compilations/" + compId);
+        adminCompilationServiceImpl.delete(compId);
         log.debug("Подборка удалена: {}", compId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

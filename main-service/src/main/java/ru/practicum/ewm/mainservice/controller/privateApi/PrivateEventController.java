@@ -45,7 +45,8 @@ public class PrivateEventController {
     private final LocalDateTime minTimeStump = LocalDateTime.of(1970, 01, 01, 00, 00, 00);
 
     @GetMapping
-    public ResponseEntity<List<EventFullDto>> getAll(@PathVariable long userId, @Valid @RequestParam(defaultValue = "0") @Min(0) int from,
+    public ResponseEntity<List<EventFullDto>> getAll(@PathVariable long userId,
+                                                     @Valid @RequestParam(defaultValue = "0") @Min(0) int from,
                                                      @Valid @RequestParam(defaultValue = "10") @Min(1) int size) {
         log.debug("Обработка запроса GET/users/" + userId + "/events");
         List<EventFullDto> events = new ArrayList<>();

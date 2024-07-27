@@ -45,7 +45,7 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Ошибка проверки пользователя на наличие в Storage! " +
                         "Пользователь не найден!"));
-        List<Event> events = eventRepository.findAllByInitiatorId(userId);
+        List<Event> events = eventRepository.findAllByInitiatorId(userId, pageable);
         return events.stream().map(event -> eventMapper.toFullDto(event)).collect(Collectors.toList());
     }
 
@@ -107,6 +107,9 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
             category = categoryRepository.findById(updateEventUserRequest.getCategory())
                     .orElseThrow(() -> new NotFoundException("Ошибка проверки категории на наличие в Storage! " +
                             "Категория не найдена!"));
+        }
+        if (eventOld.getState().equals(EventState.PUBLISHED)) {
+            throw new DataIntegrityViolationException("Нельзя изменять опубликованное событие!");
         }
         EventState eventState = null;
         if (updateEventUserRequest.getStateAction() != null) {
@@ -173,6 +176,9 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
                             eventConfirmedRequests++;
                             confirmedRequests.add(participationRequestMapper.fromParticipationRequest(participationRequest));
                         } else {
+                            if (participationRequest.getStatus().equals(ParticipationRequestState.CONFIRMED)) {
+                                throw new DataIntegrityViolationException("Нельзя оменять уже принятую заявку!");
+                            }
                             participationRequest.setStatus(ParticipationRequestState.REJECTED);
                             participationRequestRepository.save(participationRequest);
                             rejectedRequests.add(participationRequestMapper.fromParticipationRequest(participationRequest));
@@ -182,6 +188,9 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
                 break;
             case REJECTED:
                 for (ParticipationRequest participationRequest : participationRequests) {
+                    if (participationRequest.getStatus().equals(ParticipationRequestState.CONFIRMED)) {
+                        throw new DataIntegrityViolationException("Нельзя оменять уже принятую заявку!");
+                    }
                     participationRequest.setStatus(ParticipationRequestState.REJECTED);
                     participationRequestRepository.save(participationRequest);
                     rejectedRequests.add(participationRequestMapper.fromParticipationRequest(participationRequest));

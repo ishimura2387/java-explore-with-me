@@ -19,7 +19,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                           @Param("categoriesList") List<Long> categories, @Param("start")LocalDateTime rangeStart,
                           @Param("end")LocalDateTime rangeEnd, Pageable pageable);
 
-    List<Event> findAllByIdIn(Set<Long> ids);
+    Set<Event> findAllByIdIn(Set<Long> ids);
 
     @Query("select e from Event e where (e.participantLimit > e.confirmedRequests and e.participantLimit != 0) and " +
             "((:state) is null or e.state = :state) and ((:text_value) is null or ((upper(e.annotation) like upper(concat('%', :text_value, '%')) " +
@@ -37,5 +37,5 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                                    @Param("paid_value") Boolean paid, @Param("start") LocalDateTime rangeStart,
                                    @Param("end") LocalDateTime rangeEnd, @Param("state") EventState state, Pageable pageable);
 
-    List<Event> findAllByInitiatorId(Long id);
+    List<Event> findAllByInitiatorId(Long id, Pageable pageable);
 }

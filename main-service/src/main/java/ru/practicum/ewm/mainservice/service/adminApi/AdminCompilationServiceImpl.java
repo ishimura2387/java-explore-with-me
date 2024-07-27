@@ -12,8 +12,8 @@ import ru.practicum.ewm.mainservice.model.Event;
 import ru.practicum.ewm.mainservice.repository.CompilationRepository;
 import ru.practicum.ewm.mainservice.repository.EventRepository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +23,8 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
     private final EventRepository eventRepository;
 
     public CompilationDto add(NewCompilationDto newCompilationDto) {
-        List<Event> events = new ArrayList<>();
-        events = eventRepository.findAllByIdIn(newCompilationDto.getEvents());
+        Set<Event> events = new HashSet<>();
+        events = findEvents(newCompilationDto.getEvents());
         Compilation compilation = compilationMapper.toCompilation(newCompilationDto, events);
         if (compilation.getPinned() == null) {
             compilation.setPinned(false);
@@ -37,8 +37,8 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
         Compilation compilation = compilationRepository.findById(compilationId)
                 .orElseThrow(() -> new NotFoundException("Ошибка проверки подборки на наличие в Storage! " +
                         "Подборка не найдена!"));
-        List<Event> events = new ArrayList<>();
-        events = eventRepository.findAllByIdIn(updateCompilationRequest.getEvents());
+        Set<Event> events = new HashSet<>();
+        events = findEvents(updateCompilationRequest.getEvents());
         Compilation compilationNew = compilationMapper.compilationUpdate(updateCompilationRequest, compilation, events);
         return compilationMapper.fromCompilation(compilationRepository.save(compilationNew));
     }
@@ -48,5 +48,12 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
                 .orElseThrow(() -> new NotFoundException("Ошибка проверки подборки на наличие в Storage! " +
                         "Подборка не найдена!"));
         compilationRepository.delete(compilation);
+    }
+
+    private Set<Event> findEvents(Set<Long> eventsId) {
+        if (eventsId == null) {
+            return Set.of();
+        }
+        return eventRepository.findAllByIdIn(eventsId);
     }
 }

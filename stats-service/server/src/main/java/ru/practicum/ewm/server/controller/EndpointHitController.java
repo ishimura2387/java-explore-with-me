@@ -3,6 +3,8 @@ package ru.practicum.ewm.server.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,15 +26,15 @@ public class EndpointHitController {
     private final StatsService statsService;
 
     @PostMapping("/hit")
-    public EndpointHitDto add(@RequestBody EndpointHitDto endpointHitDto) {
+    public ResponseEntity<EndpointHitDto> add(@RequestBody EndpointHitDto endpointHitDto) {
         log.debug("Обработка запроса POST/hit");
         EndpointHitDto endpointHit = statsService.add(endpointHitDto);
         log.debug("Сохранен запрос: {}", endpointHit);
-        return endpointHit;
+        return new ResponseEntity<>(endpointHit, HttpStatus.CREATED);
     }
 
     @GetMapping("/stats")
-    public List<ViewStatsDto> get(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
+    public ResponseEntity<List<ViewStatsDto>> get(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
                                   @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
                                   @RequestParam(required = false) List<String> uris,
                                   @RequestParam(defaultValue = "false") boolean unique) {
@@ -43,6 +45,6 @@ public class EndpointHitController {
         log.debug("Обработка запроса GET/stats");
         List<ViewStatsDto> endpointHits = statsService.get(start, end, uris, unique);
         log.debug("Получена статистика по посещениям: {}", endpointHits);
-        return endpointHits;
+        return new ResponseEntity<>(endpointHits, HttpStatus.OK);
     }
 }

@@ -24,7 +24,7 @@ services:
       - POSTGRES_PASSWORD=iamstatsadmin
 
   ewm-service:
-    build: main-service
+    build: ./service
     image: ewm-main-service
     container_name: ewm-main-service
     ports:

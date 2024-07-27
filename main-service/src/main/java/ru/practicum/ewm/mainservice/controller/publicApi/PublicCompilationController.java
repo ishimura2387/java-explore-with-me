@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,13 +24,14 @@ import java.util.List;
 @RequestMapping(path = "/compilations")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class PublicCompilationController {
     private final PublicCompilationService compilationServiceImpl;
 
     @GetMapping
     public ResponseEntity<List<CompilationDto>> getAll(@RequestParam(defaultValue = "0") @Min(0) int from,
                                                        @RequestParam(defaultValue = "10") @Min(1) int size,
-                                                       @RequestParam(required = false) Boolean pinned) {
+                                                       @RequestParam(defaultValue = "false") Boolean pinned) {
         log.debug("Обработка запроса GET/compilations");
         List<CompilationDto> compilations = new ArrayList<>();
         Sort sort = Sort.by(Sort.Direction.ASC, "id");

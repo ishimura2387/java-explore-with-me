@@ -11,7 +11,7 @@ import ru.practicum.ewm.mainservice.dto.compilation.UpdateCompilationRequest;
 import ru.practicum.ewm.mainservice.model.Compilation;
 import ru.practicum.ewm.mainservice.model.Event;
 
-import java.util.List;
+import java.util.Set;
 
 @Mapper(componentModel = "spring", uses = {EventMapper.class})
 public interface CompilationMapper {
@@ -20,11 +20,11 @@ public interface CompilationMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "events", source = "events")
     @Mapping(target = "id", ignore = true)
-    Compilation toCompilation(NewCompilationDto newCompilationDto, List<Event> events);
+    Compilation toCompilation(NewCompilationDto newCompilationDto, Set<Event> events);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "events", source = "events")
     @Mapping(target = "id", ignore = true)
     Compilation compilationUpdate(UpdateCompilationRequest updateCompilationRequest,
-                                  @MappingTarget Compilation compilation, List<Event> events);
+                                  @MappingTarget Compilation compilation, Set<Event> events);
 }
