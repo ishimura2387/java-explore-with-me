@@ -23,7 +23,7 @@ public class ErrorHandler {
         log.info("IllegalArgumentException: {}", e.getMessage());
         return new ErrorResponse(String.format(e.getMessage()));
     }
-    
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMissingServletRequestParameterException(final MissingServletRequestParameterException e) {
