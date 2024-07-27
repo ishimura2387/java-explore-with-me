@@ -62,7 +62,7 @@ public class PrivateRequestsServiceImpl implements PrivateRequestsService {
         participationRequestNew.setEvent(event);
         participationRequestNew.setRequester(user);
         participationRequestNew.setStatus(ParticipationRequestState.PENDING);
-        if (!event.isRequestModeration() && event.getParticipantLimit() == 0) {
+        if (!event.isRequestModeration() || event.getParticipantLimit() == 0) {
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             eventRepository.save(event);
             participationRequestNew.setStatus(ParticipationRequestState.CONFIRMED);

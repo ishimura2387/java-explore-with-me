@@ -43,6 +43,9 @@ public class AdminEventServiceImpl implements AdminEventService {
         if (categories != null && categories.size() == 1 && categories.get(0).equals(0L)) {
             categories = null;
         }
+        if (users != null && users.size() == 1 && users.get(0).equals(0L)) {
+            users = null;
+        }
         events = eventRepository.getEvents(users, states, categories, rangeStart, rangeEnd, pageable).stream()
                 .map(event -> eventMapper.toFullDto(event)).collect(Collectors.toList());
         return events;

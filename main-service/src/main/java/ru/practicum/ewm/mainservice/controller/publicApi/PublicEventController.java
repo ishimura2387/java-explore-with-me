@@ -21,6 +21,7 @@ import ru.practicum.ewm.mainservice.dto.event.EventFullDto;
 import ru.practicum.ewm.mainservice.service.publicApi.PublicEventsService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -38,23 +39,23 @@ public class PublicEventController {
     private final LocalDateTime minTimeStump = LocalDateTime.of(1970, 01, 01, 00, 00, 00);
 
     @GetMapping
-    public ResponseEntity<List<EventFullDto>> getAll(@RequestParam(defaultValue = "0") @Min(0) int from,
-                                                     @RequestParam(defaultValue = "10") @Min(1) int size,
+    public ResponseEntity<List<EventFullDto>> getAll(@Valid @RequestParam(defaultValue = "0") @Min(0) int from,
+                                                     @Valid @RequestParam(defaultValue = "10") @Min(1) int size,
                                                      @RequestParam(required = false) String text,
-                                                     @RequestParam(required = false) List<Long> categoryIds,
+                                                     @RequestParam(required = false) List<Long> categories,
                                                      @RequestParam(required = false) Boolean paid,
                                                      @RequestParam(required = false)
                                                      @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                                      @RequestParam(required = false)
                                                      @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
-                                                     @RequestParam(defaultValue = "false") Boolean onlyAvailable,
+                                                     @RequestParam(defaultValue = "false") boolean onlyAvailable,
                                                      HttpServletRequest request) {
         log.debug("Обработка запроса GET/events");
         List<EventFullDto> events = new ArrayList<>();
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size, sort);
-        events = publicEventsServiceImpl.getAll(text, categoryIds, paid, rangeStart, rangeEnd, pageable, onlyAvailable);
+        events = publicEventsServiceImpl.getAll(text, categories, paid, rangeStart, rangeEnd, pageable, onlyAvailable);
         log.debug("Получен список с размером: {}", events.size());
         saveStats(request.getRemoteAddr(), "ewm-main-service", request.getRequestURI());
         return new ResponseEntity<>(events, HttpStatus.OK);

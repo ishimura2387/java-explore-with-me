@@ -43,8 +43,8 @@ public class AdminEventController {
                                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                                         @RequestParam(required = false)
                                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
-                                                        @RequestParam(defaultValue = "0") @Min(0) int from,
-                                                        @RequestParam(defaultValue = "10") @Min(1) int size) {
+                                                        @Valid @RequestParam(defaultValue = "0") @Min(0) int from,
+                                                        @Valid @RequestParam(defaultValue = "10") @Min(1) int size) {
         log.debug("Обработка запроса GET/admin/events");
         List<EventFullDto> events = new ArrayList<>();
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
