@@ -17,8 +17,8 @@ import ru.practicum.ewm.mainservice.model.Event;
 @Mapper(componentModel = "spring", uses = {UserMapper.class, CategoryMapper.class})
 public interface EventMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "category", source = "category")
-    Event toEvent(NewEventDto newEventDto, Category category);
+    @Mapping(target = "category", ignore = true)
+    Event toEvent(NewEventDto newEventDto);
 
     EventFullDto toFullDto(Event event);
 

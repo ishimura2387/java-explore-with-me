@@ -50,6 +50,8 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
     }
 
     public EventFullDto add(Long userId, NewEventDto newEventDto) {
+        System.out.println("fuck");
+        System.out.println(newEventDto.getDescription());
         if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
             throw new IllegalArgumentException("Не корректная дата!");
         }
@@ -59,7 +61,8 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
         Category category = categoryRepository.findById(newEventDto.getCategory())
                 .orElseThrow(() -> new NotFoundException("Ошибка проверки категории на наличие в Storage! " +
                         "Категория не найдена!"));
-        Event event = eventMapper.toEvent(newEventDto, category);
+        Event event = eventMapper.toEvent(newEventDto);
+        event.setCategory(category);
         event.setCreatedOn(LocalDateTime.now());
         event.setInitiator(user);
         event.setState(EventState.PENDING);
@@ -72,8 +75,7 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
         if (newEventDto.getParticipantLimit() == null) {
             event.setParticipantLimit(0L);
         }
-        EventFullDto eventFullDto = eventMapper.toFullDto(eventRepository.save(event));
-        return eventFullDto;
+        return eventMapper.toFullDto(eventRepository.save(event));
     }
 
     public EventFullDto get(Long userId, Long eventId, Long hits) {
