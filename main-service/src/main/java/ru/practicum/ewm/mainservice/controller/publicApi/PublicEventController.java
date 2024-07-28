@@ -51,12 +51,18 @@ public class PublicEventController {
                                                      @RequestParam(required = false)
                                                      @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
                                                      @RequestParam(defaultValue = "false") boolean onlyAvailable,
+                                                     @RequestParam(defaultValue = "EVENT_DATE") String sort,
                                                      HttpServletRequest request) {
         log.debug("Обработка запроса GET/events");
         List<EventFullDto> events = new ArrayList<>();
-        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+        Sort methodSort;
+        if (sort.equals("VIEWS")) {
+            methodSort = Sort.by(Sort.Direction.ASC, "views");
+        } else {
+            methodSort = Sort.by(Sort.Direction.ASC, "eventDate");
+        }
         int page = from / size;
-        Pageable pageable = PageRequest.of(page, size, sort);
+        Pageable pageable = PageRequest.of(page, size, methodSort);
         events = publicEventsServiceImpl.getAll(text, categories, paid, rangeStart, rangeEnd, pageable, onlyAvailable);
         log.debug("Получен список с размером: {}", events.size());
         saveStats(request.getRemoteAddr(), "ewm-main-service", request.getRequestURI());

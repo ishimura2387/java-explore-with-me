@@ -26,7 +26,7 @@ public class PublicEventsServiceImpl implements PublicEventsService {
     private final LocalDateTime maxTimeStump = LocalDateTime.of(2038, 01, 19, 03, 14, 07);
 
     public List<EventFullDto> getAll(String text, List<Long> categoryIds, Boolean paid, LocalDateTime rangeStart,
-                                     LocalDateTime rangeEnd, Pageable pageable, Boolean onlyAvailable) {
+                                     LocalDateTime rangeEnd, Pageable pageable, boolean onlyAvailable) {
         List<EventFullDto> events = new ArrayList<>();
         if (rangeStart == null) {
             rangeStart = LocalDateTime.now();
