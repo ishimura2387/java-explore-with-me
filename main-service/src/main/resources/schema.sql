@@ -28,7 +28,6 @@ CREATE TABLE IF NOT EXISTS events (
     request_moderation BOOLEAN NOT NULL,
     state VARCHAR(16) NOT NULL,
     title VARCHAR(120) NOT NULL,
-    views BIGINT NOT NULL,
     CONSTRAINT pk_event PRIMARY KEY (id),
     FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE RESTRICT ,
     FOREIGN KEY (initiator_id) REFERENCES users (id) ON DELETE RESTRICT

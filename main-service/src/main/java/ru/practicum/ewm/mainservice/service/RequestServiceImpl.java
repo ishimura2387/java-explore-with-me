@@ -1,4 +1,4 @@
-package ru.practicum.ewm.mainservice.service.privateApi;
+package ru.practicum.ewm.mainservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,7 +22,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class PrivateRequestsServiceImpl implements PrivateRequestsService {
+public class RequestServiceImpl implements RequestService {
+
     private final ParticipationRequestRepository participationRequestRepository;
     private final ParticipationRequestMapper participationRequestMapper;
     private final UserRepository userRepository;

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -17,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.client.WebStatsClient;
 import ru.practicum.ewm.dto.EndpointHitDto;
-import ru.practicum.ewm.dto.ViewStatsDto;
 import ru.practicum.ewm.mainservice.dto.event.EventFullDto;
-import ru.practicum.ewm.mainservice.service.publicApi.PublicEventsService;
+import ru.practicum.ewm.mainservice.dto.event.EventRequester;
+import ru.practicum.ewm.mainservice.dto.event.RequestEventParam;
+import ru.practicum.ewm.mainservice.service.EventService;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,14 +34,17 @@ import java.util.List;
 @ComponentScan(basePackages = "ru.practicum.ewm.client")
 @Validated
 public class PublicEventController {
-    private final PublicEventsService publicEventsServiceImpl;
+
+    private final EventService eventServiceImpl;
     private final WebStatsClient webStatsClient;
-    private final LocalDateTime maxTimeStump = LocalDateTime.of(2038, 01, 19, 03, 14, 07);
-    private final LocalDateTime minTimeStump = LocalDateTime.of(1970, 01, 01, 00, 00, 00);
+    private final LocalDateTime maxTimeStump = LocalDateTime.of(2038, 01, 19, 03, 14,
+            07);
+    private final LocalDateTime minTimeStump = LocalDateTime.of(1970, 01, 01, 00, 00,
+            00);
 
     @GetMapping
-    public ResponseEntity<List<EventFullDto>> getAll(@Valid @RequestParam(defaultValue = "0") @Min(0) int from,
-                                                     @Valid @RequestParam(defaultValue = "10") @Min(1) int size,
+    public ResponseEntity<List<EventFullDto>> getAll(@RequestParam(defaultValue = "0") @Min(0) int from,
+                                                     @RequestParam(defaultValue = "10") @Min(1) int size,
                                                      @RequestParam(required = false) String text,
                                                      @RequestParam(required = false) List<Long> categories,
                                                      @RequestParam(required = false) Boolean paid,
@@ -61,9 +63,17 @@ public class PublicEventController {
         } else {
             methodSort = Sort.by(Sort.Direction.ASC, "eventDate");
         }
-        int page = from / size;
-        Pageable pageable = PageRequest.of(page, size, methodSort);
-        events = publicEventsServiceImpl.getAll(text, categories, paid, rangeStart, rangeEnd, pageable, onlyAvailable);
+        RequestEventParam requestEventParam = RequestEventParam.builder()
+                .text(text)
+                .categories(categories)
+                .paid(paid)
+                .rangeStart(rangeStart)
+                .rangeEnd(rangeEnd)
+                .onlyAvailable(onlyAvailable)
+                .pageable(PageRequest.of(from / size, size, methodSort))
+                .eventRequester(EventRequester.PublicRequester)
+                .build();
+        events = eventServiceImpl.getAllWithParam(requestEventParam);
         log.debug("Получен список с размером: {}", events.size());
         saveStats(request.getRemoteAddr(), "ewm-main-service", request.getRequestURI());
         return new ResponseEntity<>(events, HttpStatus.OK);
@@ -75,12 +85,7 @@ public class PublicEventController {
         saveStats(request.getRemoteAddr(), "ewm-main-service", request.getRequestURI());
         List<String> uris = new ArrayList<>();
         uris.add(request.getRequestURI());
-        List<ViewStatsDto> views = webStatsClient.getStats(minTimeStump, maxTimeStump, uris, true);
-        long view = 0;
-        if (views.size() > 0) {
-            view = views.get(0).getHits();
-        }
-        EventFullDto event = publicEventsServiceImpl.get(id, view);
+        EventFullDto event = eventServiceImpl.get(null, id, EventRequester.PublicRequester);
         log.debug("Получено событие: {}", event);
         return new ResponseEntity<>(event, HttpStatus.OK);
     }

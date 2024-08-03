@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.mainservice.dto.compilation.CompilationDto;
-import ru.practicum.ewm.mainservice.service.publicApi.PublicCompilationService;
+import ru.practicum.ewm.mainservice.service.CompilationService;
 
 import javax.validation.constraints.Min;
 import java.util.ArrayList;
@@ -26,12 +26,12 @@ import java.util.List;
 @Slf4j
 @Validated
 public class PublicCompilationController {
-    private final PublicCompilationService compilationServiceImpl;
+    private final CompilationService compilationServiceImpl;
 
     @GetMapping
     public ResponseEntity<List<CompilationDto>> getAll(@RequestParam(defaultValue = "0") @Min(0) int from,
                                                        @RequestParam(defaultValue = "10") @Min(1) int size,
-                                                       @RequestParam(defaultValue = "false") Boolean pinned) {
+                                                       @RequestParam(required = false) Boolean pinned) {
         log.debug("Обработка запроса GET/compilations");
         List<CompilationDto> compilations = new ArrayList<>();
         Sort sort = Sort.by(Sort.Direction.ASC, "id");

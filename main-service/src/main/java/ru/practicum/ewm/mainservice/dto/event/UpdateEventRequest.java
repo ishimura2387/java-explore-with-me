@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UpdateEventUserRequest {
+public class UpdateEventRequest {
     @Size(min = 20, max = 2000)
     private String annotation;
     @Size(min = 20, max = 7000)
@@ -30,5 +30,5 @@ public class UpdateEventUserRequest {
     private Boolean requestModeration;
     @Size(min = 3, max = 120)
     private String title;
-    private UserEventAction stateAction;
+    private EventAction stateAction;
 }

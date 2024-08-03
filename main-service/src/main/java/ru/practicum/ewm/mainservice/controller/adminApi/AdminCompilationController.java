@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.mainservice.dto.compilation.CompilationDto;
 import ru.practicum.ewm.mainservice.dto.compilation.NewCompilationDto;
 import ru.practicum.ewm.mainservice.dto.compilation.UpdateCompilationRequest;
-import ru.practicum.ewm.mainservice.service.adminApi.AdminCompilationService;
+import ru.practicum.ewm.mainservice.service.CompilationService;
 
 import javax.validation.Valid;
 
@@ -26,20 +26,21 @@ import javax.validation.Valid;
 @Slf4j
 @Validated
 public class AdminCompilationController {
-    private final AdminCompilationService adminCompilationServiceImpl;
+    private final CompilationService compilationServiceImpl;
 
     @PostMapping
     public ResponseEntity<CompilationDto> add(@Valid @RequestBody NewCompilationDto newCompilationDto) {
         log.debug("Обработка запроса POST/admin/compilations");
-        CompilationDto compilation = adminCompilationServiceImpl.add(newCompilationDto);
+        CompilationDto compilation = compilationServiceImpl.add(newCompilationDto);
         log.debug("Создана подборка: {}", compilation);
         return new ResponseEntity<>(compilation, HttpStatus.CREATED);
     }
 
     @PatchMapping("/{compId}")
-    public ResponseEntity<CompilationDto> update(@PathVariable long compId, @Valid @RequestBody UpdateCompilationRequest updateCompilationRequest) {
+    public ResponseEntity<CompilationDto> update(@PathVariable long compId,
+                                                 @Valid @RequestBody UpdateCompilationRequest updateCompilationRequest) {
         log.debug("Обработка запроса PATCH/admin/compilations/" + compId);
-        CompilationDto compilation = adminCompilationServiceImpl.update(compId, updateCompilationRequest);
+        CompilationDto compilation = compilationServiceImpl.update(compId, updateCompilationRequest);
         log.debug("Изменена подборка: {}, compId={}", compilation, compId);
         return new ResponseEntity<>(compilation, HttpStatus.OK);
     }
@@ -47,7 +48,7 @@ public class AdminCompilationController {
     @DeleteMapping("/{compId}")
     public ResponseEntity<Void> delete(@PathVariable long compId) {
         log.debug("Обработка запроса DELETE/admin/compilations/" + compId);
-        adminCompilationServiceImpl.delete(compId);
+        compilationServiceImpl.delete(compId);
         log.debug("Подборка удалена: {}", compId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

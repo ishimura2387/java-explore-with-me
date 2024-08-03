@@ -1,10 +1,11 @@
-package ru.practicum.ewm.mainservice.service.privateApi;
+package ru.practicum.ewm.mainservice.service;
 
 import ru.practicum.ewm.mainservice.dto.participationRequest.ParticipationRequestDto;
 
 import java.util.List;
 
-public interface PrivateRequestsService {
+public interface RequestService {
+
     List<ParticipationRequestDto> getAll(Long userId);
 
     ParticipationRequestDto add(Long userId, Long eventId);

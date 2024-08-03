@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.mainservice.dto.category.CategoryDto;
 import ru.practicum.ewm.mainservice.dto.category.NewCategoryDto;
-import ru.practicum.ewm.mainservice.service.adminApi.AdminCategoryService;
+import ru.practicum.ewm.mainservice.service.CategoryService;
 
 import javax.validation.Valid;
 
@@ -25,12 +25,12 @@ import javax.validation.Valid;
 @Validated
 public class AdminCategoryController {
 
-    private final AdminCategoryService adminCategoryServiceImpl;
+    private final CategoryService categoryServiceImpl;
 
     @PostMapping
     public ResponseEntity<CategoryDto> add(@RequestBody @Valid NewCategoryDto newCategoryDto) {
         log.debug("Обработка запроса POST/admin/categories");
-        CategoryDto category = adminCategoryServiceImpl.add(newCategoryDto);
+        CategoryDto category = categoryServiceImpl.add(newCategoryDto);
         log.debug("Создана категория: {}", category);
         return new ResponseEntity<>(category, HttpStatus.CREATED);
     }
@@ -38,7 +38,7 @@ public class AdminCategoryController {
     @DeleteMapping("/{catId}")
     public ResponseEntity<Void> delete(@PathVariable long catId) {
         log.debug("Обработка запроса DELETE/admin/categories/" + catId);
-        adminCategoryServiceImpl.delete(catId);
+        categoryServiceImpl.delete(catId);
         log.debug("Категория удалена: {}", catId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -47,7 +47,7 @@ public class AdminCategoryController {
     public ResponseEntity<CategoryDto> update(@PathVariable long catId, @Valid @RequestBody CategoryDto categoryDto) {
         categoryDto.setId(catId);
         log.debug("Обработка запроса PATCH/admin/categories/" + catId);
-        CategoryDto category = adminCategoryServiceImpl.update(categoryDto);
+        CategoryDto category = categoryServiceImpl.update(categoryDto);
         log.debug("Изменена категория: {}, catId={}", category, catId);
         return new ResponseEntity<>(category, HttpStatus.OK);
     }

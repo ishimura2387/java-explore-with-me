@@ -3,7 +3,6 @@ package ru.practicum.ewm.mainservice.controller.adminApi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -18,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.mainservice.dto.event.EventFullDto;
 import ru.practicum.ewm.mainservice.dto.event.EventState;
-import ru.practicum.ewm.mainservice.dto.event.UpdateEventAdminRequest;
-import ru.practicum.ewm.mainservice.service.adminApi.AdminEventService;
+import ru.practicum.ewm.mainservice.dto.event.RequestEventParam;
+import ru.practicum.ewm.mainservice.dto.event.UpdateEventRequest;
+import ru.practicum.ewm.mainservice.dto.event.EventRequester;
+import ru.practicum.ewm.mainservice.service.EventService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -33,7 +34,7 @@ import java.util.List;
 @Slf4j
 @Validated
 public class AdminEventController {
-    private final AdminEventService adminEventServiceImpl;
+    private final EventService eventServiceImpl;
 
     @GetMapping
     public ResponseEntity<List<EventFullDto>> getEvents(@RequestParam(required = false) List<Long> users,
@@ -43,22 +44,29 @@ public class AdminEventController {
                                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                                         @RequestParam(required = false)
                                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
-                                                        @Valid @RequestParam(defaultValue = "0") @Min(0) int from,
-                                                        @Valid @RequestParam(defaultValue = "10") @Min(1) int size) {
+                                                        @RequestParam(defaultValue = "0") @Min(0) int from,
+                                                        @RequestParam(defaultValue = "10") @Min(1) int size) {
         log.debug("Обработка запроса GET/admin/events");
         List<EventFullDto> events = new ArrayList<>();
-        Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        int page = from / size;
-        Pageable pageable = PageRequest.of(page, size, sort);
-        events = adminEventServiceImpl.getEvents(users, states, categories, rangeStart, rangeEnd, pageable);
+        RequestEventParam requestEventParam = RequestEventParam.builder()
+                .users(users)
+                .states(states)
+                .categories(categories)
+                .rangeStart(rangeStart)
+                .rangeEnd(rangeEnd)
+                .pageable(PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id")))
+                .eventRequester(EventRequester.Admin)
+                .build();
+        events = eventServiceImpl.getAllWithParam(requestEventParam);
         log.debug("Получен список с размером: {}", events.size());
         return new ResponseEntity<>(events, HttpStatus.OK);
     }
 
     @PatchMapping("/{eventId}")
-    public ResponseEntity<EventFullDto> update(@PathVariable long eventId, @RequestBody @Valid UpdateEventAdminRequest updateEventAdminRequest) {
+    public ResponseEntity<EventFullDto> update(@PathVariable long eventId,
+                                               @RequestBody @Valid UpdateEventRequest updateEventRequest) {
         log.debug("Обработка запроса GET/admin/events/" + eventId);
-        EventFullDto event = adminEventServiceImpl.update(eventId, updateEventAdminRequest);
+        EventFullDto event = eventServiceImpl.update(null, eventId, updateEventRequest, EventRequester.Admin);
         log.debug("Изменено событие: {}", event);
         return new ResponseEntity<>(event, HttpStatus.OK);
     }

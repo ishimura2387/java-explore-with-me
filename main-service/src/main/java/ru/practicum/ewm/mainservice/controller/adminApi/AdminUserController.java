@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.mainservice.dto.user.NewUserRequest;
 import ru.practicum.ewm.mainservice.dto.user.UserDto;
-import ru.practicum.ewm.mainservice.service.adminApi.AdminUserService;
+import ru.practicum.ewm.mainservice.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,7 @@ import javax.validation.constraints.Min;
 @Validated
 public class AdminUserController {
 
-    private final AdminUserService adminUserServiceImpl;
+    private final UserService userServiceImpl;
 
     @GetMapping
     public ResponseEntity<List<UserDto>> get(@RequestParam(required = false) List<Long> ids,
@@ -43,7 +43,7 @@ public class AdminUserController {
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size, sort);
-        users = adminUserServiceImpl.get(ids, pageable);
+        users = userServiceImpl.get(ids, pageable);
         log.debug("Получен список с размером: {}", users.size());
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
@@ -51,7 +51,7 @@ public class AdminUserController {
     @PostMapping
     public ResponseEntity<UserDto> add(@Valid @RequestBody NewUserRequest newUserRequest) {
         log.debug("Обработка запроса POST/admin/users");
-        UserDto user = adminUserServiceImpl.add(newUserRequest);
+        UserDto user = userServiceImpl.add(newUserRequest);
         log.debug("Создан пользователь: {}", user);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
@@ -59,7 +59,7 @@ public class AdminUserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> delete(@PathVariable long userId) {
         log.debug("Обработка запроса DELETE/admin/users/" + userId);
-        adminUserServiceImpl.delete(userId);
+        userServiceImpl.delete(userId);
         log.debug("Пользователь удален: {}", userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

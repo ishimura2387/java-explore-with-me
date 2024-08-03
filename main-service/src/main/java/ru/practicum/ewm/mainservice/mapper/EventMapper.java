@@ -9,8 +9,7 @@ import ru.practicum.ewm.mainservice.dto.event.EventFullDto;
 import ru.practicum.ewm.mainservice.dto.event.EventShortDto;
 import ru.practicum.ewm.mainservice.dto.event.EventState;
 import ru.practicum.ewm.mainservice.dto.event.NewEventDto;
-import ru.practicum.ewm.mainservice.dto.event.UpdateEventAdminRequest;
-import ru.practicum.ewm.mainservice.dto.event.UpdateEventUserRequest;
+import ru.practicum.ewm.mainservice.dto.event.UpdateEventRequest;
 import ru.practicum.ewm.mainservice.model.Category;
 import ru.practicum.ewm.mainservice.model.Event;
 
@@ -28,13 +27,7 @@ public interface EventMapper {
     @Mapping(target = "event.state", source = "eventState")
     @Mapping(target = "category", source = "cat")
     @Mapping(target = "id", ignore = true)
-    Event fromRequestAdmin(UpdateEventAdminRequest updateEventAdminRequest, @MappingTarget Event event, EventState eventState, Category cat);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "event.state", source = "eventState")
-    @Mapping(target = "category", source = "cat")
-    @Mapping(target = "id", ignore = true)
-    Event fromRequestUser(UpdateEventUserRequest updateEventUserRequest, @MappingTarget Event event, EventState eventState, Category cat);
+    Event fromRequest(UpdateEventRequest updateEventRequest, @MappingTarget Event event, EventState eventState, Category cat);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Event eventUpdate(@MappingTarget Event eventNew, Event old);

@@ -12,30 +12,31 @@ import java.util.List;
 import java.util.Set;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
-    @Query("select e from Event e where ((:usersList) is NULL or e.initiator.id in :usersList) and ((:statesList) " +
-            "is NULL or e.state in :statesList) and ((:categoriesList) is null or e.category.id in :categoriesList) and " +
-            "e.eventDate > :start and e.eventDate < :end")
-    List<Event> getEvents(@Param("usersList") List<Long> users, @Param("statesList") List<EventState> states,
-                          @Param("categoriesList") List<Long> categories, @Param("start")LocalDateTime rangeStart,
-                          @Param("end")LocalDateTime rangeEnd, Pageable pageable);
 
     Set<Event> findAllByIdIn(Set<Long> ids);
 
-    @Query("select e from Event e where (e.participantLimit > e.confirmedRequests and e.participantLimit != 0) and " +
-            "((:state) is null or e.state = :state) and ((:text_value) is null or ((upper(e.annotation) like upper(concat('%', :text_value, '%')) " +
-            "or (upper(e.description) like upper(concat('%', :text_value, '%')))))) and ((:categoryList) is null or " +
-            "e.category.id in :categoryList) and ((:paid_value) is null or e.paid = :paid_value) and e.eventDate between :start and :end")
-    List<Event> getEventsAvailable(@Param("text_value") String text, @Param("categoryList")List<Long> categoryIds,
-                                   @Param("paid_value") Boolean paid, @Param("start") LocalDateTime rangeStart,
-                                   @Param("end") LocalDateTime rangeEnd, @Param("state") EventState state, Pageable pageable);
-
-    @Query("select e from Event e where ((:state) is null or e.state = :state) and ((upper(e.annotation) like " +
-            "upper(concat('%', :text_value, '%')) or ((upper(e.description) like upper(concat('%', :text_value, '%'))))) or (:text_value) is null) " +
-            "and (e.category.id in :categoryList or (:categoryList) is NULL ) and ((:paid_value) is null or " +
-            "e.paid = :paid_value) and e.eventDate between :start and :end")
-    List<Event> getEventsNotAvailable(@Param("text_value") String text, @Param("categoryList")List<Long> categoryIds,
-                                      @Param("paid_value") Boolean paid, @Param("start") LocalDateTime rangeStart,
-                                      @Param("end") LocalDateTime rangeEnd, @Param("state") EventState state, Pageable pageable);
 
     List<Event> findAllByInitiatorId(Long id, Pageable pageable);
+
+    List<Event> findAllByCategoryId(long id);
+
+    @Query("select e from Event e where ((:usersList) is null or e.initiator.id in :usersList) and ((:statesList) " +
+            "is NULL or e.state in :statesList) and ((:categoriesList) is null or e.category.id in :categoriesList) and " +
+            "e.eventDate between :start and :end and ((upper(e.annotation) like upper(concat('%', :text_value, '%')) or " +
+            "((upper(e.description) like upper(concat('%', :text_value, '%'))))) or (:text_value) is null) " +
+            "and ((:paid_value) is null or e.paid = :paid_value)")
+    List<Event> getEventsWithParam(@Param("usersList") List<Long> users, @Param("statesList") List<EventState> states,
+                          @Param("categoriesList") List<Long> categories, @Param("start")LocalDateTime rangeStart,
+                          @Param("end")LocalDateTime rangeEnd, Pageable pageable, @Param("text_value") String text,
+                          @Param("paid_value") Boolean paid);
+
+    @Query("select e from Event e where ((:usersList) is null or e.initiator.id in :usersList) and ((:statesList) " +
+            "is NULL or e.state in :statesList) and ((:categoriesList) is null or e.category.id in :categoriesList) and " +
+            "e.eventDate between :start and :end and ((upper(e.annotation) like upper(concat('%', :text_value, '%')) or " +
+            "((upper(e.description) like upper(concat('%', :text_value, '%'))))) or (:text_value) is null) " +
+            "and ((:paid_value) is null or e.paid = :paid_value) and (e.participantLimit > e.confirmedRequests and e.participantLimit != 0)")
+    List<Event> getEventsWithParamAvailable(@Param("usersList") List<Long> users, @Param("statesList") List<EventState> states,
+                                   @Param("categoriesList") List<Long> categories, @Param("start")LocalDateTime rangeStart,
+                                   @Param("end")LocalDateTime rangeEnd, Pageable pageable, @Param("text_value") String text,
+                                   @Param("paid_value") Boolean paid);
 }
