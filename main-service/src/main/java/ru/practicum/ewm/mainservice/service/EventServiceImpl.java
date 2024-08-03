@@ -57,10 +57,6 @@ public class EventServiceImpl implements EventService {
         if (requestEventParam.getRangeEnd() == null) {
             requestEventParam.setRangeEnd(maxTimeStump);
         }
-       /* Данные переменные позволяют избежать создания нескольких методов в репозитории: иначе потребуется создавать
-       методы для (start == null and end != null), (start != null and end == null), (start == null and end == null).
-        Получится куча лишнего кода
-        */
         if (requestEventParam.getRangeStart() != null && requestEventParam.getRangeEnd() != null) {
             if (requestEventParam.getRangeStart().isAfter(requestEventParam.getRangeEnd())) {
                 throw new IllegalArgumentException("Время начала диапазона не может быть позже времени конца!");
