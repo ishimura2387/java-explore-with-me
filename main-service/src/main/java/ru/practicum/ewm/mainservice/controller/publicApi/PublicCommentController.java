@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.mainservice.dto.comment.CommentDto;
 import ru.practicum.ewm.mainservice.service.CommentService;
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
 import java.util.List;
 
 @RestController

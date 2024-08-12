@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.mainservice.dto.category.CategoryDto;
 import ru.practicum.ewm.mainservice.service.CategoryService;
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.List;
 

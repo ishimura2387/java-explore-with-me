@@ -21,8 +21,8 @@ import ru.practicum.ewm.mainservice.dto.comment.CommentRequester;
 import ru.practicum.ewm.mainservice.dto.comment.UpdateCommentRequest;
 import ru.practicum.ewm.mainservice.service.CommentService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import java.util.List;
 
 @RestController

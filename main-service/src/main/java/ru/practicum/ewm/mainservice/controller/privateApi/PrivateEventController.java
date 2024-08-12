@@ -26,9 +26,9 @@ import ru.practicum.ewm.mainservice.dto.event.NewEventDto;
 import ru.practicum.ewm.mainservice.dto.participationRequest.ParticipationRequestDto;
 import ru.practicum.ewm.mainservice.service.EventService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
