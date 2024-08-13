@@ -96,7 +96,7 @@ public class PrivateEventController {
         return new ResponseEntity<>(participationRequests, HttpStatus.OK);
     }
 
-    @PatchMapping("/{eventId}/requests")
+    @PatchMapping({"/{eventId}/requests", "/{eventId}/requests/"}) // фикс для бага тестов! при миграции на 12 java
     public ResponseEntity<EventRequestStatusUpdateResult> updateState(@PathVariable long userId, @PathVariable long eventId,
                                                       @RequestBody @Valid EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
         log.debug("Обработка запроса PATCH/users/" + userId + "/events/" + eventId + "/requests");
