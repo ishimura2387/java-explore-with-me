@@ -8,6 +8,7 @@ import ru.practicum.ewm.mainservice.dto.comment.CommentDto;
 import ru.practicum.ewm.mainservice.dto.comment.CommentRequester;
 import ru.practicum.ewm.mainservice.dto.comment.NewCommentDto;
 import ru.practicum.ewm.mainservice.dto.comment.UpdateCommentRequest;
+import ru.practicum.ewm.mainservice.dto.event.EventState;
 import ru.practicum.ewm.mainservice.exception.NotFoundException;
 import ru.practicum.ewm.mainservice.mapper.CommentMapper;
 import ru.practicum.ewm.mainservice.model.Comment;
@@ -30,13 +31,16 @@ public class CommentServiceImpl implements CommentService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
 
-    public CommentDto add(Long userId, Long eventId, NewCommentDto newCommentDto) {
+    public CommentDto add(Long userId, NewCommentDto newCommentDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Ошибка проверки пользователя на наличие в Storage! " +
                         "Пользователь не найден!"));
-        Event event = eventRepository.findById(eventId)
+        Event event = eventRepository.findById(newCommentDto.getEventId())
                 .orElseThrow(() -> new NotFoundException("Ошибка проверки события на наличие в Storage! " +
                         "Событие не найдено!"));
+        if (!event.getState().equals(EventState.PUBLISHED)) {
+            throw new DataIntegrityViolationException("Публиковать комментарии можно только к опубликованным событям!");
+        }
         Comment comment = commentMapper.toComment(newCommentDto);
         comment.setAuthor(user);
         comment.setEvent(event);
@@ -44,11 +48,11 @@ public class CommentServiceImpl implements CommentService {
         return commentMapper.toCommentDto(commentRepository.save(comment));
     }
 
-    public CommentDto update(Long userId, Long commentId, UpdateCommentRequest updateCommentRequest, CommentRequester commentRequester) {
-        Comment comment = commentRepository.findById(commentId)
+    public CommentDto update(Long userId, UpdateCommentRequest updateCommentRequest, CommentRequester commentRequester) {
+        Comment comment = commentRepository.findById(updateCommentRequest.getCommentId())
                 .orElseThrow(() -> new NotFoundException("Ошибка проверки комментария на наличие в Storage! " +
                         "Комментарий не найден!"));
-        if (commentRequester.equals(CommentRequester.User)) {
+        if (commentRequester.equals(CommentRequester.USER)) {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new NotFoundException("Ошибка проверки пользователя на наличие в Storage! " +
                             "Пользователь не найден!"));
@@ -57,6 +61,7 @@ public class CommentServiceImpl implements CommentService {
             }
         }
         comment.setText(updateCommentRequest.getText());
+        comment.setChanged(LocalDateTime.now());
         return commentMapper.toCommentDto(commentRepository.save(comment));
     }
 
@@ -64,7 +69,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("Ошибка проверки комментария на наличие в Storage! " +
                         "Комментарий не найден!"));
-        if (commentRequester.equals(CommentRequester.User)) {
+        if (commentRequester.equals(CommentRequester.USER)) {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new NotFoundException("Ошибка проверки пользователя на наличие в Storage! " +
                             "Пользователь не найден!"));

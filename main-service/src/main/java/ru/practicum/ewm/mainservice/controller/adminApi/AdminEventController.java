@@ -55,7 +55,7 @@ public class AdminEventController {
                 .rangeStart(rangeStart)
                 .rangeEnd(rangeEnd)
                 .pageable(PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id")))
-                .eventRequester(EventRequester.Admin)
+                .eventRequester(EventRequester.ADMIN)
                 .build();
         events = eventServiceImpl.getAllWithParam(requestEventParam);
         log.debug("Получен список с размером: {}", events.size());
@@ -66,7 +66,7 @@ public class AdminEventController {
     public ResponseEntity<EventFullDto> update(@PathVariable long eventId,
                                                @RequestBody @Valid UpdateEventRequest updateEventRequest) {
         log.debug("Обработка запроса GET/admin/events/" + eventId);
-        EventFullDto event = eventServiceImpl.update(null, eventId, updateEventRequest, EventRequester.Admin);
+        EventFullDto event = eventServiceImpl.update(null, eventId, updateEventRequest, EventRequester.ADMIN);
         log.debug("Изменено событие: {}", event);
         return new ResponseEntity<>(event, HttpStatus.OK);
     }

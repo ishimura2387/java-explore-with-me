@@ -1,10 +1,10 @@
 package ru.practicum.ewm.mainservice.model;
 
+import jakarta.persistence.FetchType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.context.annotation.Lazy;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -26,13 +27,12 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String text;
-    @ManyToOne
+    @ManyToOne // здесь ленивая загрузка не нужна вообще считаю, ошибся
     @JoinColumn(name = "event_id")
-    @Lazy
     private Event event;
-    @ManyToOne
+    @ManyToOne // здесь ленивая загрузка не нужна вообще считаю, ошибся
     @JoinColumn(name = "user_id")
-    @Lazy
     private User author;
     private LocalDateTime created;
+    private LocalDateTime changed;
 }

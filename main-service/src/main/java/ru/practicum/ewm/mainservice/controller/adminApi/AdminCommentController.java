@@ -34,18 +34,18 @@ public class AdminCommentController {
 
     private final CommentService commentServiceImpl;
 
-    @PatchMapping("/{comId}")
-    public ResponseEntity<CommentDto> update(@PathVariable long comId, @Valid @RequestBody UpdateCommentRequest updateCommentRequest) {
-        log.debug("Обработка запроса PATCH/admin/comments/" + comId);
-        CommentDto comment = commentServiceImpl.update(null, comId, updateCommentRequest, CommentRequester.Admin);
-        log.debug("Изменен комментарий: {}, comId={}", comment, comId);
+    @PatchMapping
+    public ResponseEntity<CommentDto> update(@Valid @RequestBody UpdateCommentRequest updateCommentRequest) {
+        log.debug("Обработка запроса PATCH/admin/comments");
+        CommentDto comment = commentServiceImpl.update(null, updateCommentRequest, CommentRequester.ADMIN);
+        log.debug("Изменен комментарий: {}, comId={}", comment, comment.getId());
         return new ResponseEntity<>(comment, HttpStatus.OK);
     }
 
     @DeleteMapping("/{comId}")
     public ResponseEntity<Void> delete(@PathVariable long comId) {
         log.debug("Обработка запроса DELETE/admin/comments/" + comId);
-        commentServiceImpl.delete(null, comId, CommentRequester.Admin);
+        commentServiceImpl.delete(null, comId, CommentRequester.ADMIN);
         log.debug("Комментарий удален: {}", comId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

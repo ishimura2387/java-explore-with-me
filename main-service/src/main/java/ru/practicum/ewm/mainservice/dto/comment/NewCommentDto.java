@@ -17,4 +17,5 @@ public class NewCommentDto {
     @NotBlank
     @Size(max = 6000)
     private String text;
+    long eventId;
 }

@@ -16,4 +16,5 @@ public class UpdateCommentRequest {
     @NotBlank
     @Size(max = 6000)
     private String text;
+    long commentId;
 }

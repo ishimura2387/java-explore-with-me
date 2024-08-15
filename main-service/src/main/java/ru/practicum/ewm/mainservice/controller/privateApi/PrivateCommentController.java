@@ -36,26 +36,26 @@ public class PrivateCommentController {
 
     private final CommentService commentServiceImpl;
 
-    @PostMapping("/{eventId}")
-    public ResponseEntity<CommentDto> add(@PathVariable long userId, @PathVariable long eventId, @Valid @RequestBody NewCommentDto newCommentDto) {
-        log.debug("Обработка запроса POST/users/" + userId + "/comments/" + eventId);
-        CommentDto comment = commentServiceImpl.add(userId, eventId, newCommentDto);
+    @PostMapping
+    public ResponseEntity<CommentDto> add(@PathVariable long userId, @Valid @RequestBody NewCommentDto newCommentDto) {
+        log.debug("Обработка запроса POST/users/" + userId + "/comments");
+        CommentDto comment = commentServiceImpl.add(userId, newCommentDto);
         log.debug("Создан комментарий: {}", comment);
         return new ResponseEntity<>(comment, HttpStatus.CREATED);
     }
 
-    @PatchMapping("/{comId}")
-    public ResponseEntity<CommentDto> update(@PathVariable long userId, @PathVariable long comId, @Valid @RequestBody UpdateCommentRequest updateCommentRequest) {
-        log.debug("Обработка запроса PATCH/users/" + userId + "/comments/" + comId);
-        CommentDto comment = commentServiceImpl.update(userId, comId, updateCommentRequest, CommentRequester.User);
-        log.debug("Изменен комментарий: {}, comId={}", comment, comId);
+    @PatchMapping
+    public ResponseEntity<CommentDto> update(@PathVariable long userId, @Valid @RequestBody UpdateCommentRequest updateCommentRequest) {
+        log.debug("Обработка запроса PATCH/users/" + userId + "/comments");
+        CommentDto comment = commentServiceImpl.update(userId, updateCommentRequest, CommentRequester.USER);
+        log.debug("Изменен комментарий: {}, comId={}", comment, comment.getId());
         return new ResponseEntity<>(comment, HttpStatus.OK);
     }
 
     @DeleteMapping("/{comId}")
     public ResponseEntity<Void> delete(@PathVariable long userId, @PathVariable long comId) {
         log.debug("Обработка запроса DELETE/users/" + userId + "/comments/" + comId);
-        commentServiceImpl.delete(userId, comId, CommentRequester.User);
+        commentServiceImpl.delete(userId, comId, CommentRequester.USER);
         log.debug("Комментарий удален: {}", comId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
