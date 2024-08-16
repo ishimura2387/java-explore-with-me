@@ -7,7 +7,6 @@ import org.springframework.data.repository.query.Param;
 import ru.practicum.ewm.mainservice.model.Comment;
 
 import java.util.List;
-import java.util.Map;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findAllByEventId(Long id, Pageable pageable);

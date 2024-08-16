@@ -321,7 +321,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private List<EventFullDto> setNumberOfComments(List<EventFullDto> events) {
-        List<Long> eventsIds= new ArrayList<>();
+        List<Long> eventsIds = new ArrayList<>();
         List<Long> commentsValue = new ArrayList<>();
         for (EventFullDto event : events) {
             eventsIds.add(event.getId());

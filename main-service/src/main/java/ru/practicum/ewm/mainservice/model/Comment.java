@@ -1,6 +1,5 @@
 package ru.practicum.ewm.mainservice.model;
 
-import jakarta.persistence.FetchType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
