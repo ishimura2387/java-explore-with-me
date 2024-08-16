@@ -2,6 +2,7 @@ package ru.practicum.ewm.mainservice.mapper;
 
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.practicum.ewm.mainservice.dto.category.CategoryDto;
@@ -10,7 +11,7 @@ import ru.practicum.ewm.mainservice.model.Category;
 
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
-
+    @Mapping(target = "id", ignore = true)
     Category toCategory(NewCategoryDto newCategoryDto);
 
     CategoryDto fromCategory(Category category);
