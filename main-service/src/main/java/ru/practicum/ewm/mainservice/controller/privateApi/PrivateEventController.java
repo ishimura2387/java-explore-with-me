@@ -26,9 +26,9 @@ import ru.practicum.ewm.mainservice.dto.event.NewEventDto;
 import ru.practicum.ewm.mainservice.dto.participationRequest.ParticipationRequestDto;
 import ru.practicum.ewm.mainservice.service.EventService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +73,7 @@ public class PrivateEventController {
         log.debug("Обработка запроса GET/users/" + userId + "/events/" + eventId);
         List<String> uris = new ArrayList<>();
         uris.add(request.getRequestURI());
-        EventFullDto event = eventServiceImpl.get(userId, eventId, EventRequester.User);
+        EventFullDto event = eventServiceImpl.get(userId, eventId, EventRequester.USER);
         log.debug("Получено событие: {}", event);
         return new ResponseEntity<>(event, HttpStatus.OK);
     }
@@ -82,7 +82,7 @@ public class PrivateEventController {
     public ResponseEntity<EventFullDto> update(@PathVariable long userId, @PathVariable long eventId,
                                                @RequestBody @Valid UpdateEventRequest updateEventRequest) {
         log.debug("Обработка запроса PATCH/users/" + userId + "/events/" + eventId);
-        EventFullDto event = eventServiceImpl.update(userId, eventId, updateEventRequest, EventRequester.User);
+        EventFullDto event = eventServiceImpl.update(userId, eventId, updateEventRequest, EventRequester.USER);
         log.debug("Изменено событие: {}", event);
         return new ResponseEntity<>(event, HttpStatus.OK);
     }
@@ -96,7 +96,7 @@ public class PrivateEventController {
         return new ResponseEntity<>(participationRequests, HttpStatus.OK);
     }
 
-    @PatchMapping("/{eventId}/requests")
+    @PatchMapping({"/{eventId}/requests", "/{eventId}/requests/"}) // фикс для бага тестов! при миграции на 12 java
     public ResponseEntity<EventRequestStatusUpdateResult> updateState(@PathVariable long userId, @PathVariable long eventId,
                                                       @RequestBody @Valid EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
         log.debug("Обработка запроса PATCH/users/" + userId + "/events/" + eventId + "/requests");

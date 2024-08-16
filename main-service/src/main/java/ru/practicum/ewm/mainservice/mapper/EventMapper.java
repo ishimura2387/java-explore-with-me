@@ -17,16 +17,29 @@ import ru.practicum.ewm.mainservice.model.Event;
 public interface EventMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "category", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "confirmedRequests", ignore = true)
+    @Mapping(target = "createdOn", ignore = true)
+    @Mapping(target = "initiator", ignore = true)
+    @Mapping(target = "publishedOn", ignore = true)
+    @Mapping(target = "state", ignore = true)
     Event toEvent(NewEventDto newEventDto);
 
+    @Mapping(target = "views", ignore = true)
+    @Mapping(target = "comments", ignore = true)
     EventFullDto toFullDto(Event event);
 
+    @Mapping(target = "views", ignore = true)
     EventShortDto toShortDto(Event event);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "event.state", source = "eventState")
     @Mapping(target = "category", source = "cat")
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "confirmedRequests", ignore = true)
+    @Mapping(target = "createdOn", ignore = true)
+    @Mapping(target = "initiator", ignore = true)
+    @Mapping(target = "publishedOn", ignore = true)
     Event fromRequest(UpdateEventRequest updateEventRequest, @MappingTarget Event event, EventState eventState, Category cat);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

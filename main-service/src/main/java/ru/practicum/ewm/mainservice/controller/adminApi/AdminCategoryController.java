@@ -16,7 +16,7 @@ import ru.practicum.ewm.mainservice.dto.category.CategoryDto;
 import ru.practicum.ewm.mainservice.dto.category.NewCategoryDto;
 import ru.practicum.ewm.mainservice.service.CategoryService;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(path = "/admin/categories")

@@ -1,4 +1,4 @@
-package ru.practicum.ewm.mainservice.dto.category;
+package ru.practicum.ewm.mainservice.dto.comment;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,8 +12,9 @@ import jakarta.validation.constraints.Size;
 @NoArgsConstructor
 @Getter
 @Setter
-public class NewCategoryDto {
+public class UpdateCommentRequest {
     @NotBlank
-    @Size(min = 2, max = 50)
-    private String name;
+    @Size(max = 6000)
+    private String text;
+    long commentId;
 }

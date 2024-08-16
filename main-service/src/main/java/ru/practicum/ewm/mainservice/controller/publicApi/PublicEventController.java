@@ -21,8 +21,8 @@ import ru.practicum.ewm.mainservice.dto.event.EventRequester;
 import ru.practicum.ewm.mainservice.dto.event.RequestEventParam;
 import ru.practicum.ewm.mainservice.service.EventService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.Min;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +71,7 @@ public class PublicEventController {
                 .rangeEnd(rangeEnd)
                 .onlyAvailable(onlyAvailable)
                 .pageable(PageRequest.of(from / size, size, methodSort))
-                .eventRequester(EventRequester.PublicRequester)
+                .eventRequester(EventRequester.PUBLIC_REQUESTER)
                 .build();
         events = eventServiceImpl.getAllWithParam(requestEventParam);
         log.debug("Получен список с размером: {}", events.size());
@@ -85,7 +85,7 @@ public class PublicEventController {
         saveStats(request.getRemoteAddr(), "ewm-main-service", request.getRequestURI());
         List<String> uris = new ArrayList<>();
         uris.add(request.getRequestURI());
-        EventFullDto event = eventServiceImpl.get(null, id, EventRequester.PublicRequester);
+        EventFullDto event = eventServiceImpl.get(null, id, EventRequester.PUBLIC_REQUESTER);
         log.debug("Получено событие: {}", event);
         return new ResponseEntity<>(event, HttpStatus.OK);
     }

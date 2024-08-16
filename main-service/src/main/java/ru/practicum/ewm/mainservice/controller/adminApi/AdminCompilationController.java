@@ -17,7 +17,7 @@ import ru.practicum.ewm.mainservice.dto.compilation.NewCompilationDto;
 import ru.practicum.ewm.mainservice.dto.compilation.UpdateCompilationRequest;
 import ru.practicum.ewm.mainservice.service.CompilationService;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 
 @RestController
